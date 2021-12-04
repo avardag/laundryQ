@@ -3,6 +3,7 @@ const path = require("path");
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 // const bodyParser = require('body-parser');
 //routes
 const userRouter = require("./routes/userRoutes");
@@ -15,6 +16,7 @@ app.use(helmet());
 app.use(express.json());
 // app.use(express.urlencoded({extended: false}));
 // app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(cors());
 
 //Mounting router

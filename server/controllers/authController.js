@@ -2,48 +2,8 @@ const { promisify } = require("util");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("../db/db");
-
-const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPRIRES_IN,
-  });
-};
-/**
- *
- * @param {Object} user
- * @param {Number} statusCode
- * @param {Object} res
- */
-const createAndSendToken = (user, statusCode, res) => {
-  const token = signToken(user.id);
-
-  //set cookie
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPRIRES_IN * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-    // secure: true, //
-  };
-  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
-
-  res.cookie("jwt_auth", token, cookieOptions);
-  const userDataToSend = {
-    id: user.id,
-    email: user.email,
-    firstName: user.first_name,
-    lastName: user.last_name,
-  };
-
-  //send response
-  res.status(statusCode).json({
-    status: "success",
-    token,
-    data: {
-      user: userDataToSend,
-    },
-  });
-};
+const createAndSendToken = require("../utils/jwtSignSend").createAndSendToken;
+const userServices = require("../services/userServices");
 //////////////////////////
 //SIGNUP
 /////////////////////////
@@ -68,26 +28,59 @@ exports.signup = async (req, res, next) => {
     });
   }
   try {
-    //hash password
-    const hashedPass = await bcrypt.hash(password, 12);
+    //register user and get tokens
+    const userData = await userServices.registerUser(
+      firstName,
+      lastName,
+      email,
+      password,
+      passwordConfirm,
+      phone
+    );
+    //set cookie
+    const cookieOptions = {
+      expires: new Date(
+        Date.now() + process.env.JWT_COOKIE_EXPRIRES_IN * 24 * 60 * 60 * 1000
+      ),
+      httpOnly: true,
+      // secure: true, //
+    };
+    if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
-    const [newUser] = await db("users")
-      .insert({
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        password: hashedPass,
-        phone,
-      })
-      .returning("*");
-
-    createAndSendToken(newUser, 201, res);
+    res.cookie("jwt_r_auth", userData.refreshToken, cookieOptions);
+    //send response
+    res.status(200).json({
+      status: "success",
+      token: userData.refreshToken,
+      data: {
+        user: userData,
+      },
+    });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: "error occued" });
+    return res.status(500).json({ message: "error occurred" });
   }
 };
-
+//////////////////////////
+//Activate account
+/////////////////////////
+exports.activate = async (req, res, next) => {
+  const activationLink = req.params.link;
+  const user = await db("users")
+    .where({ activation_link: activationLink })
+    .select("*")
+    .first();
+  if (!user) {
+    return res.status(401).json({
+      status: "error",
+      message: "User Not Found",
+    });
+  }
+  await db("users")
+    .update({ is_activated: true })
+    .where({ activation_link: activationLink });
+  return res.redirect(process.env.CLIENT_URL); //send to React main page
+};
 //////////////////////////
 //LOGIN
 /////////////////////////
@@ -116,6 +109,14 @@ exports.login = async (req, res, next) => {
   //if everything is OK, send the token
   createAndSendToken(user, 200, res);
 };
+//////////////////////////
+//LOGout
+/////////////////////////
+exports.logout = async (req, res, next) => {};
+//////////////////////////
+//Refresh tokens
+/////////////////////////
+exports.refresh = async (req, res, next) => {};
 
 /**
  *  Authorization Middleware for protected routes

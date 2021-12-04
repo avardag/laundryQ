@@ -11,6 +11,10 @@ router.route("/").get((req, res) => {
 //User Routes
 router.post("/signup", validInfo, authController.signup);
 router.post("/login", validInfo, authController.login);
+router.post("/logout", authController.logout);
+//User Routes for profile activation and refresh tokens
+router.get("/activate/:link", authController.activate);
+router.get("/refresh", authController.refresh);
 
 //will run protect MW for all routes after this line
 router.use(authController.protect);
