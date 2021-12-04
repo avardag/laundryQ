@@ -1,10 +1,11 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const db = require('../db/db');
+const { promisify } = require("util");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const db = require("../db/db");
 
-const signToken = id => {
+const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPRIRES_IN
+    expiresIn: process.env.JWT_EXPRIRES_IN,
   });
 };
 /**
@@ -14,81 +15,164 @@ const signToken = id => {
  * @param {Object} res
  */
 const createAndSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
+  const token = signToken(user.id);
 
   //set cookie
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPRIRES_IN * 24 * 60 * 60 * 1000
     ),
-    httpOnly: true
+    httpOnly: true,
+    // secure: true, //
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
-  res.cookie('jwt_auth', token, cookieOptions);
-  //dont send user password
-  user.password = undefined;
-  console.log(user.password);
+  res.cookie("jwt_auth", token, cookieOptions);
+  const userDataToSend = {
+    id: user.id,
+    email: user.email,
+    firstName: user.first_name,
+    lastName: user.last_name,
+  };
 
   //send response
   res.status(statusCode).json({
-    status: 'success',
+    status: "success",
     token,
     data: {
-      user: user
-    }
+      user: userDataToSend,
+    },
   });
 };
+//////////////////////////
+//SIGNUP
+/////////////////////////
 exports.signup = async (req, res, next) => {
-  const {firstName, lastName, email, password, passwordConfirm, phone} = req.body;
+  const { firstName, lastName, email, password, passwordConfirm, phone } =
+    req.body;
 
   try {
-// check if user exists
-    const users = await db('users')
-      .select("*")
-      .where({email})
-    if(users.length !== 0) return res.status(401).json({
-      status:'error',
-      message:"User already exists"
-    })
+    // check if user exists
+    const users = await db("users").select("*").where({ email });
+    if (users.length !== 0)
+      return res.status(401).json({
+        status: "error",
+        message: "User already exists",
+      });
 
     // return res.status(200).json(users)
-  }catch (err){
-     return res.status(500).json({
-       status:'error',
-       message:"Error connecting to DB"
-     })
+  } catch (err) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error connecting to DB",
+    });
   }
   try {
     //hash password
-    const hashedPass = await bcrypt.hash(password, 12)
+    const hashedPass = await bcrypt.hash(password, 12);
 
-  const [newUser] = await db('users')
-    .insert({
-    first_name:firstName,
-    last_name:lastName,
-    email,
-    password:hashedPass,
-    phone
-  })
-    .returning('*')
+    const [newUser] = await db("users")
+      .insert({
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password: hashedPass,
+        phone,
+      })
+      .returning("*");
 
     createAndSendToken(newUser, 201, res);
-  }catch (err){
+  } catch (err) {
     console.log(err);
-  return res.status(500).json({message: 'error occued'})
+    return res.status(500).json({ message: "error occued" });
+  }
+};
+
+//////////////////////////
+//LOGIN
+/////////////////////////
+exports.login = async (req, res, next) => {
+  const { email, password } = req.body;
+  //check if email and passwords exist
+  if (!email || !password) {
+    return res.status(400).json({
+      status: "error",
+      message: "Please enter your email and password",
+    });
+  }
+  //check if user exists && password is correct
+  const user = await db("users")
+    .where({ email })
+    .select(["id", "email", "first_name", "last_name", "password"])
+    .first();
+
+  // const match = await bcrypt.compare(password, user.password);
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(401).json({
+      status: "error",
+      message: "Invalid email or password",
+    });
+  }
+  //if everything is OK, send the token
+  createAndSendToken(user, 200, res);
+};
+
+/**
+ *  Authorization Middleware for protected routes
+ */
+exports.protect = async (req, res, next) => {
+  //1) get token if exists
+  let token;
+  let user;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
   }
 
-}
-
-/*
-//... fetch user from a db etc.
-
-    const match = await bcrypt.compare(password, user.passwordHash);
-
-    if(match) {
-        //login
+  if (!token) {
+    return res.status(403).json({
+      status: "error",
+      message: "Unauthorized",
+    });
+  }
+  try {
+    //2) Verification(validate the token)
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    //jwt.verify will throw errors if invalid token or expired.
+    //3) check if user still exists
+    const foundUser = await db("users")
+      .where({ id: decoded.id })
+      .select("*")
+      .first();
+    if (!foundUser) {
+      return res.status(401).json({
+        status: "error",
+        message: "User no longer exists",
+      });
     }
+    user = foundUser;
+  } catch (e) {
+    console.log(e);
+    return res.status(403).json({
+      status: "error",
+      message: "Unauthorized or wrong token",
+    });
+  }
+  //if all OK, go to route handler. Access to protected routes
+  req.user = user; //save user for future use
+  next();
+};
 
-    //...
-* */
+exports.verify = (req, res) => {
+  const { email, first_name: firstName, last_name: lastName } = req.user;
+  res.status(200).json({
+    status: "success",
+    user: {
+      email,
+      firstName,
+      lastName,
+    },
+  });
+};
