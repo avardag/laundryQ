@@ -12,7 +12,8 @@
     "knex": "knex init",
     "db:migrate:make": "knex migrate:make --knexfile server/db/knexfile.js",
     "db:migrate:latest": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:latest --knexfile server/db/knexfile.js",
-    "db:migrate:rollback": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:rollback --knexfile server/db/knexfile.js"
+    "db:migrate:rollback": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:rollback --knexfile server/db/knexfile.js",
+    "db:migrate:up": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:up --knexfile server/db/knexfile.js"
   },
   "repository": {
     "type": "git",
