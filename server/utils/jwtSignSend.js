@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const db = require("../db/db");
 
-exports.generateTokens = (payload) => {
+generateTokens = (payload) => {
   const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
     expiresIn: process.env.JWT_ACCESS_EXPRIRES_IN,
   });
@@ -11,7 +11,7 @@ exports.generateTokens = (payload) => {
   return { accessToken, refreshToken };
 };
 
-exports.saveTokenToDB = async (userId, refreshToken) => {
+saveTokenToDB = async (userId, refreshToken) => {
   const tokenData = await db("tokens").select("*").where({ user_id: userId });
   if (tokenData.length > 0) {
     const token = await db("tokens")
@@ -27,4 +27,22 @@ exports.saveTokenToDB = async (userId, refreshToken) => {
     })
     .returning("*");
   return token;
+};
+
+exports.tokenSignAndSaveToDB = async (user) => {
+  //tokens
+  const tokens = generateTokens({
+    id: user.id,
+    email: user.email,
+    isActivated: user.is_activated,
+  });
+  // save token to DB
+  await saveTokenToDB(user.id, tokens.refreshToken);
+  return tokens;
+};
+
+exports.removeTokenFromDB = async (refreshToken) => {
+  const tokenData = await db("tokens")
+    .where({ refresh_token: refreshToken })
+    .delete();
 };

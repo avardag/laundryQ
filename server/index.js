@@ -5,6 +5,8 @@ const helmet = require("helmet");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 // const bodyParser = require('body-parser');
+const globalErrorHandler = require("./controllers/errorController");
+
 //routes
 const userRouter = require("./routes/userRoutes");
 
@@ -28,6 +30,9 @@ if (ENV === "production") {
     res.sendFile(path.join(__dirname, "../client/build/index.html"));
   });
 }
+
+//Error handler
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}!`);

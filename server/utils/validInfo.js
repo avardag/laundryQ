@@ -1,3 +1,5 @@
+const AppError = require("./appError");
+
 //TODO : use validator library
 module.exports = function (req, res, next) {
   const { email, firstName, lastName, password, passwordConfirm, phone } =
@@ -13,39 +15,20 @@ module.exports = function (req, res, next) {
         Boolean
       )
     ) {
-      return res.status(401).json({
-        status: "error",
-        message: "Missing Credentials",
-      });
+      return next(new AppError("Missing Credentials", 401));
     } else if (!validEmail(email)) {
-      return res.status(401).json({
-        status: "error",
-        message: "Invalid Email",
-      });
+      return next(new AppError("Invalid Email", 401));
     } else if (password !== passwordConfirm) {
-      return res.status(401).json({
-        status: "error",
-        message: "Passwords don't match",
-      });
+      return next(new AppError("Passwords don't match", 401));
     } else if (password.length < 6) {
-      return res.status(401).json({
-        status: "error",
-        message: "Password must be more than 6 chars",
-      });
+      return next(new AppError("Password must be more than 6 chars", 401));
     }
   } else if (req.path === "/login") {
     if (![email, password].every(Boolean)) {
-      return res.status(401).json({
-        status: "error",
-        message: "Missing Credentials",
-      });
+      return next(new AppError("Missing Credentials", 401));
     } else if (!validEmail(email)) {
-      return res.status(401).json({
-        status: "error",
-        message: "Invalid Email",
-      });
+      return next(new AppError("Invalid Email", 401));
     }
   }
-
   next();
 };

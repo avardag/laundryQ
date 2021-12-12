@@ -3,6 +3,8 @@ const uuid = require("uuid");
 const db = require("../db/db");
 const sendMail = require("../utils/sendMail");
 const jwtSignSend = require("../utils/jwtSignSend");
+const AppError = require("../utils/appError");
+const { createAndSendToken } = require("../utils/jwtSignSend");
 
 /**
  * Registers user, hashes password, sends email for activation saves to DB, saves tokens to DB
@@ -43,14 +45,7 @@ exports.registerUser = async function (
     `${process.env.API_URL}/api/v1/users/activate/${activationLink}`
   );
 
-  //tokens
-  const tokens = jwtSignSend.generateTokens({
-    id: newUser.id,
-    email: newUser.email,
-    isActivated: newUser.is_activated,
-  });
-  // save token to DB
-  await jwtSignSend.saveTokenToDB(newUser.id, tokens.refreshToken);
+  const tokens = await jwtSignSend.tokenSignAndSaveToDB(newUser);
   return {
     ...tokens,
     user: {
@@ -59,6 +54,32 @@ exports.registerUser = async function (
       firstName: newUser.first_name,
       lastName: newUser.last_name,
       isActivated: newUser.is_activated,
+    },
+  };
+};
+
+exports.loginUser = async function (email, password) {
+  //check if user exists && password is correct
+  const user = await db("users")
+    .where({ email })
+    .select(["id", "email", "first_name", "last_name", "password"])
+    .first();
+
+  // const match = await bcrypt.compare(password, user.password);
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return;
+  }
+  //tokens
+  const tokens = await jwtSignSend.tokenSignAndSaveToDB(user);
+
+  return {
+    ...tokens,
+    user: {
+      id: user.id,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      isActivated: user.is_activated,
     },
   };
 };
