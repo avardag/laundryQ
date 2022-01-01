@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const { promisify } = require("util");
+
 const db = require("../db/db");
 
 generateTokens = (payload) => {
@@ -45,4 +47,37 @@ exports.removeTokenFromDB = async (refreshToken) => {
   const tokenData = await db("tokens")
     .where({ refresh_token: refreshToken })
     .delete();
+};
+
+/**
+ *
+ * @param token {String} access token from users Cookie storage, which is set by res.setCookie
+ * @returns {Promise<*>} decodedUserData
+ */
+exports.validateAccessToken = async (token) => {
+  //jwt.verify will throw errors if invalid token or expired.
+  return await promisify(jwt.verify)(token, process.env.JWT_ACCESS_SECRET);
+};
+
+/**
+ *
+ * @param token {String} refresh token from users Local Storage
+ * @returns {Promise<*>} decodedUserData
+ */
+exports.validateRefreshToken = async (token) => {
+  // try {
+  //   //jwt.verify will throw errors if invalid token or expired.
+  //   return await promisify(jwt.verify)(token, process.env.JWT_REFRESH_SECRET);
+  // } catch (e) {
+  //   return null;
+  // }
+  return await promisify(jwt.verify)(token, process.env.JWT_REFRESH_SECRET);
+};
+
+exports.findTokenInDB = async (refreshToken) => {
+  const tokenData = await db("tokens")
+    .where({ refresh_token: refreshToken })
+    .select("*")
+    .first();
+  return tokenData;
 };

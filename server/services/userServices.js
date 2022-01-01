@@ -83,3 +83,28 @@ exports.loginUser = async function (email, password) {
     },
   };
 };
+
+exports.refresh = async function (refreshToken) {
+  const userData = await jwtSignSend.validateRefreshToken(refreshToken);
+  const tokenFromDB = await jwtSignSend.findTokenInDB(refreshToken);
+  if (!userData || !tokenFromDB) return null;
+  //get user info. In 2 months it can be updated
+  const user = await db("users")
+    .where({ id: userData.id })
+    .select(["id", "email", "first_name", "last_name"])
+    .first();
+
+  //tokens
+  const tokens = await jwtSignSend.tokenSignAndSaveToDB(user);
+
+  return {
+    ...tokens,
+    user: {
+      id: user.id,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      isActivated: user.is_activated,
+    },
+  };
+};

@@ -1,3 +1,4 @@
+const os = require("os");
 const { promisify } = require("util");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -6,6 +7,7 @@ const jwtSignSend = require("../utils/jwtSignSend");
 const userServices = require("../services/userServices");
 const catchAsyncError = require("../utils/catchAsyncError");
 const AppError = require("../utils/appError");
+const { validateAccessToken } = require("../utils/jwtSignSend");
 
 /**
  *
@@ -111,15 +113,29 @@ exports.logout = catchAsyncError(async (req, res, next) => {
 //////////////////////////
 //Refresh tokens
 /////////////////////////
-exports.refresh = async (req, res, next) => {};
+exports.refresh = catchAsyncError(async (req, res, next) => {
+  if (!req.body.refreshToken)
+    return next(new AppError("No token provided", 401));
+  const userData = await userServices.refresh(req.body.refreshToken);
+  if (!userData) return next(new AppError("Invalid refresh token", 401));
+  //set cookie
+  setCookie(res, userData.refreshToken);
+  //send response
+  res.status(200).json({
+    status: "success",
+    token: userData.refreshToken,
+    data: {
+      user: userData,
+    },
+  });
+});
 
 /**
  *  Authorization Middleware for protected routes
  */
-exports.protect = async (req, res, next) => {
+exports.protect = catchAsyncError(async (req, res, next) => {
   //1) get token if exists
   let token;
-  let user;
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
@@ -128,39 +144,26 @@ exports.protect = async (req, res, next) => {
   }
 
   if (!token) {
-    return res.status(403).json({
-      status: "error",
-      message: "Unauthorized",
-    });
+    return next(new AppError("You are not logged in", 403));
   }
-  try {
-    //2) Verification(validate the token)
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    //jwt.verify will throw errors if invalid token or expired.
-    //3) check if user still exists
-    const foundUser = await db("users")
-      .where({ id: decoded.id })
-      .select("*")
-      .first();
-    if (!foundUser) {
-      return res.status(401).json({
-        status: "error",
-        message: "User no longer exists",
-      });
-    }
-    user = foundUser;
-  } catch (e) {
-    console.log(e);
-    return res.status(403).json({
-      status: "error",
-      message: "Unauthorized or wrong token",
-    });
+  //2) Verification(validate the token)
+  const decodedUserData = await validateAccessToken(token);
+  //jwt.verify will throw errors if invalid token or expired. in global Error handler
+  //3) check if user still exists
+  const foundUser = await db("users")
+    .where({ id: decodedUserData.id })
+    .select("*")
+    .first();
+  if (!foundUser) {
+    return next(new AppError("User no longer exists", 401));
   }
-  //if all OK, go to route handler. Access to protected routes
-  req.user = user; //save user for future use
-  next();
-};
 
+  //if all OK, go to route handler. Access to protected routes
+  req.user = foundUser; //save user for future use
+  next();
+});
+
+//endpoint just to check if user is signed in
 exports.verify = (req, res) => {
   const { email, first_name: firstName, last_name: lastName } = req.user;
   res.status(200).json({
