@@ -38,7 +38,14 @@ exports.registerUser = async function (
       phone,
       activation_link: activationLink,
     })
-    .returning("*");
+    .returning([
+      "id",
+      "email",
+      "first_name",
+      "last_name",
+      "password",
+      "is_activated",
+    ]);
 
   await sendMail.sendActivationMail(
     email,
@@ -47,7 +54,6 @@ exports.registerUser = async function (
 
   const tokens = await jwtSignSend.tokenSignAndSaveToDB(newUser);
   return {
-    ...tokens,
     user: {
       id: newUser.id,
       email: newUser.email,
@@ -55,6 +61,7 @@ exports.registerUser = async function (
       lastName: newUser.last_name,
       isActivated: newUser.is_activated,
     },
+    tokens: { ...tokens },
   };
 };
 
@@ -62,7 +69,14 @@ exports.loginUser = async function (email, password) {
   //check if user exists && password is correct
   const user = await db("users")
     .where({ email })
-    .select(["id", "email", "first_name", "last_name", "password"])
+    .select([
+      "id",
+      "email",
+      "first_name",
+      "last_name",
+      "password",
+      "is_activated",
+    ])
     .first();
 
   // const match = await bcrypt.compare(password, user.password);
@@ -73,7 +87,6 @@ exports.loginUser = async function (email, password) {
   const tokens = await jwtSignSend.tokenSignAndSaveToDB(user);
 
   return {
-    ...tokens,
     user: {
       id: user.id,
       email: user.email,
@@ -81,6 +94,7 @@ exports.loginUser = async function (email, password) {
       lastName: user.last_name,
       isActivated: user.is_activated,
     },
+    tokens: { ...tokens },
   };
 };
 
@@ -91,14 +105,13 @@ exports.refresh = async function (refreshToken) {
   //get user info. In 2 months it can be updated
   const user = await db("users")
     .where({ id: userData.id })
-    .select(["id", "email", "first_name", "last_name"])
+    .select(["id", "email", "first_name", "last_name", "is_activated"])
     .first();
 
   //tokens
   const tokens = await jwtSignSend.tokenSignAndSaveToDB(user);
 
   return {
-    ...tokens,
     user: {
       id: user.id,
       email: user.email,
@@ -106,5 +119,6 @@ exports.refresh = async function (refreshToken) {
       lastName: user.last_name,
       isActivated: user.is_activated,
     },
+    tokens: { ...tokens },
   };
 };

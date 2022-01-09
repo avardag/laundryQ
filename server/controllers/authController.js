@@ -51,14 +51,11 @@ exports.signup = catchAsyncError(async (req, res, next) => {
     phone
   );
   //set cookie
-  setCookie(res, userData.refreshToken);
+  setCookie(res, userData.tokens.refreshToken);
   //send response
   res.status(200).json({
     status: "success",
-    token: userData.refreshToken,
-    data: {
-      user: userData,
-    },
+    data: userData,
   });
 });
 //////////////////////////
@@ -88,14 +85,11 @@ exports.login = catchAsyncError(async (req, res, next) => {
   const userData = await userServices.loginUser(email, password, next);
   if (!userData) return next(new AppError("Invalid email or password", 401));
   //set cookie
-  setCookie(res, userData.refreshToken);
+  setCookie(res, userData.tokens.refreshToken);
   //send response
   res.status(200).json({
     status: "success",
-    token: userData.refreshToken,
-    data: {
-      user: userData,
-    },
+    data: userData,
   });
 });
 //////////////////////////
@@ -114,19 +108,16 @@ exports.logout = catchAsyncError(async (req, res, next) => {
 //Refresh tokens
 /////////////////////////
 exports.refresh = catchAsyncError(async (req, res, next) => {
-  if (!req.body.refreshToken)
-    return next(new AppError("No token provided", 401));
-  const userData = await userServices.refresh(req.body.refreshToken);
+  const { jwt_r_auth } = req.cookies;
+  if (!jwt_r_auth) return next(new AppError("No token provided", 401));
+  const userData = await userServices.refresh(jwt_r_auth);
   if (!userData) return next(new AppError("Invalid refresh token", 401));
   //set cookie
-  setCookie(res, userData.refreshToken);
+  setCookie(res, userData.tokens.refreshToken);
   //send response
   res.status(200).json({
     status: "success",
-    token: userData.refreshToken,
-    data: {
-      user: userData,
-    },
+    data: userData,
   });
 });
 
@@ -144,7 +135,7 @@ exports.protect = catchAsyncError(async (req, res, next) => {
   }
 
   if (!token) {
-    return next(new AppError("You are not logged in", 403));
+    return next(new AppError("You are not logged in", 401));
   }
   //2) Verification(validate the token)
   const decodedUserData = await validateAccessToken(token);

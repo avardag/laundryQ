@@ -3,12 +3,20 @@ const catchAsyncError = require("../utils/catchAsyncError");
 
 exports.getUsers = catchAsyncError(async (req, res, next) => {
   const users = await db
-    .select("email", "first_name", "last_name", "phone", "is_activated")
+    .select("id", "email", "first_name", "last_name", "phone", "is_activated")
     .from("users");
+  const mappedUsers = users.map((user) => ({
+    id: user.id,
+    email: user.email,
+    firstName: user.first_name,
+    lastName: user.last_name,
+    phone: user.phone,
+    isActivated: user.is_activated,
+  }));
   res.status(200).json({
     status: "success",
     data: {
-      users,
+      users: mappedUsers,
     },
   });
 });

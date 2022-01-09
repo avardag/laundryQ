@@ -1,45 +1,99 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import {
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+  useLocation,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
+import "./App.css";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Users from "./pages/Users";
+
+import RequireAuth from "./utils/RequireAuth";
+import { useAppSelector, useAppDispatch } from "./app/store";
+import { checkAuthOnAppStart, logout } from "./app/features/authSlice";
+import { User } from "./app/features/types";
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user);
+  // console.log("user in App.tsx: ", user);
+  useEffect(() => {
+    if (localStorage.getItem("accessToken")) {
+      dispatch(checkAuthOnAppStart());
+    }
+  }, []);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+      <Routes>
+        <Route element={<Layout user={user} />}>
+          <Route path="/" element={<PublicPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/users"
+            element={
+              <RequireAuth>
+                <Users />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/protected"
+            element={
+              <RequireAuth>
+                <ProtectedPage />
+              </RequireAuth>
+            }
+          />
+        </Route>
+      </Routes>
     </div>
-  )
+  );
 }
 
-export default App
+function Layout({ user }: { user: User | null }) {
+  const dispatch = useAppDispatch();
+  let navigate = useNavigate();
+  const onLogoutButton = () => {
+    dispatch(logout());
+    navigate("/");
+  };
+  return (
+    <div>
+      {user ? (
+        <p>You are loged in as {`${user.firstName}`} </p>
+      ) : (
+        <Link to="/login">Login Here</Link>
+      )}
+      <ul>
+        <li>
+          <Link to="/">Public Page</Link>
+        </li>
+        <li>
+          <Link to="/protected">Protected Page</Link>
+        </li>
+        <li>
+          <Link to="/users">All Users</Link>
+        </li>
+      </ul>
+
+      <div>{user && <button onClick={onLogoutButton}>Logout</button>}</div>
+      <Outlet />
+    </div>
+  );
+}
+
+function PublicPage() {
+  return <h3>Public</h3>;
+}
+
+function ProtectedPage() {
+  return <h3>Protected</h3>;
+}
+
+export default App;
