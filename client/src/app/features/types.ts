@@ -13,18 +13,11 @@ export interface User {
   phone: string;
   email: string;
   id: number;
-}
-export interface Tokens {
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string
 }
 
-export interface AuthData {
-  user: User;
-  tokens: Tokens;
-}
 export interface AuthApiResponse extends ApiResponse {
-  data: AuthData;
+  user: User;
 }
 
 export interface UsersApiResponse extends ApiResponse {

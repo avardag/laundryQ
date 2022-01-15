@@ -1,4 +1,4 @@
-import axiosApi from "../axiosApi";
+import {axiosApi} from "../axiosApi";
 
 import { AxiosResponse } from "axios";
 import { UsersApiResponse } from "../features/types";

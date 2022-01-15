@@ -55,7 +55,7 @@ exports.signup = catchAsyncError(async (req, res, next) => {
   //send response
   res.status(200).json({
     status: "success",
-    data: userData,
+    user: userData.user,
   });
 });
 //////////////////////////
@@ -89,7 +89,7 @@ exports.login = catchAsyncError(async (req, res, next) => {
   //send response
   res.status(200).json({
     status: "success",
-    data: userData,
+    user: userData.user,
   });
 });
 //////////////////////////
@@ -117,7 +117,7 @@ exports.refresh = catchAsyncError(async (req, res, next) => {
   //send response
   res.status(200).json({
     status: "success",
-    data: userData,
+    user: userData.user,
   });
 });
 
