@@ -10,6 +10,19 @@ const AppError = require("../utils/appError");
 const { validateAccessToken } = require("../utils/jwtSignSend");
 
 /**
+    400 Bad Request -the server cannot or will not process the request due to 
+      something that is perceived to be a client error (for example, malformed request syntax,
+      invalid request message framing, or deceptive request routing).
+    401 Unauthorized -the client request has not been completed because it lacks valid authentication credentials for
+        the requested resource. This status code is similar to the 403 Forbidden status code,
+        except that in situations resulting in this status code, user authentication can allow access to the resource. 
+    402 Payment Required
+    403 Forbidden -server understands the request but refuses to authorize it.
+        re-authenticating makes no difference. The access is permanently forbidden and
+        tied to the application logic, such as insufficient rights to a resource.
+    404 Not Found -server cannot find the requested resource
+ */
+/**
  *
  * @param res {Object} - response object of express
  * @param cookieName {String} - name of a cookie to be set on client
@@ -32,13 +45,23 @@ const setCookie = function (res, cookieData, cookieName = "jwt_r_auth") {
 //SIGNUP
 /////////////////////////
 exports.signup = catchAsyncError(async (req, res, next) => {
-  const { firstName, lastName, email, password, passwordConfirm, phone } =
-    req.body;
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    passwordConfirm,
+    phone,
+    city,
+    address,
+    postcode,
+    laundryId,
+  } = req.body;
 
   // check if user exists
   const users = await db("users").select("*").where({ email });
   if (users.length !== 0) {
-    return next(new AppError("User already exists", 401));
+    return next(new AppError("User already exists", 400));
   }
 
   //register user and get tokens
@@ -48,7 +71,11 @@ exports.signup = catchAsyncError(async (req, res, next) => {
     email,
     password,
     passwordConfirm,
-    phone
+    phone,
+    city,
+    address,
+    postcode,
+    laundryId
   );
   //set cookie
   setCookie(res, userData.tokens.refreshToken);
@@ -67,7 +94,7 @@ exports.activate = catchAsyncError(async (req, res, next) => {
     .where({ activation_link: activationLink })
     .select("*")
     .first();
-  if (!user) return next(new AppError("User Not Found", 401));
+  if (!user) return next(new AppError("User Not Found", 400));
   await db("users")
     .update({ is_activated: true })
     .where({ activation_link: activationLink });
@@ -83,7 +110,7 @@ exports.login = catchAsyncError(async (req, res, next) => {
     return next(new AppError("Please enter your email and password", 400));
 
   const userData = await userServices.loginUser(email, password, next);
-  if (!userData) return next(new AppError("Invalid email or password", 401));
+  if (!userData) return next(new AppError("Invalid email or password", 400));
   //set cookie
   setCookie(res, userData.tokens.refreshToken);
   //send response
@@ -135,7 +162,7 @@ exports.protect = catchAsyncError(async (req, res, next) => {
   }
 
   if (!token) {
-    return next(new AppError("You are not logged in", 401));
+    return next(new AppError("You are not logged in", 403));
   }
   //2) Verification(validate the token)
   const decodedUserData = await validateAccessToken(token);

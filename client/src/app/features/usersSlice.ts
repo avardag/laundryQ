@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
-import type { ApiErrorResponse, UsersApiResponse, Tokens, User } from "./types";
+import type { ApiErrorResponse, UsersApiResponse, User } from "./types";
 import type { RootState } from "../store";
 import userServices from "../services/userServices";
 

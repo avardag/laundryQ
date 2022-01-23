@@ -45,16 +45,14 @@ module.exports = (err, req, res, next) => {
 
   //send different types of errors in dev or prod
   if (process.env.NODE_ENV === "development") {
-    let error = { ...err };
-    if (error.name === "JsonWebTokenError") error = handleJWTError();
-    if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
+    if (err.name === "JsonWebTokenError") err = handleJWTError();
+    if (err.name === "TokenExpiredError") err = handleJWTExpiredError();
 
-    sendErrorDev(error, res);
+    sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === "production") {
-    let error = { ...err };
-    if (error.name === "JsonWebTokenError") error = handleJWTError();
-    if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
+    if (err.name === "JsonWebTokenError") err = handleJWTError();
+    if (err.name === "TokenExpiredError") err = handleJWTExpiredError();
 
-    sendErrorProd(error, res);
+    sendErrorProd(err, res);
   }
 };

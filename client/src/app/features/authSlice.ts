@@ -30,14 +30,14 @@ export const login = createAsyncThunk<
     rejectValue: ApiErrorResponse; //type possible errors.
   }
 >(`auth/login`, async (data: LoginRequest, { getState, rejectWithValue }) => {
-  console.log('hit login thunk');
-  
+  console.log("hit login thunk");
+
   const state = getState() as RootState;
   try {
     const res = await authServices.login(data);
-    
+
     localStorage.setItem("accessToken", res.data.user.accessToken);
-    
+
     return res.data;
   } catch (err: any) {
     let error: AxiosError<ApiErrorResponse> = err; // cast the error for access
@@ -57,6 +57,7 @@ export const signup = createAsyncThunk<
   }
 >(`auth/signup`, async (data: SignupRequest, { getState, rejectWithValue }) => {
   const state = getState() as RootState;
+
   try {
     const res = await authServices.signup(data);
     localStorage.setItem("accessToken", res.data.user.accessToken);
@@ -103,7 +104,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logoutOnExpire: (state) => {
-      state.user = null
+      state.user = null;
     },
   },
   extraReducers: (builder) => {

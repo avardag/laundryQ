@@ -6,6 +6,12 @@ export interface ApiErrorResponse {
 export interface ApiResponse {
   status: "success" | "error" | "fail";
 }
+// enum Roles {
+//   user = "user",
+//   moderator = "moderator",
+//   admin = "admin",
+//   superuser = "superuser",
+// }
 export interface User {
   firstName: string;
   lastName: string;
@@ -13,7 +19,12 @@ export interface User {
   phone: string;
   email: string;
   id: number;
-  accessToken: string
+  accessToken: string;
+  role: "user" | "moderator" | "admin" | "superuser";
+  city: string;
+  address: string;
+  laundry_id?: number;
+  postcode: string;
 }
 
 export interface AuthApiResponse extends ApiResponse {
@@ -36,4 +47,8 @@ export interface SignupRequest extends LoginRequest {
   lastName: string;
   passwordConfirm: string;
   phone: string;
+  city: string;
+  address: string;
+  laundryId: null | number;
+  postcode: string;
 }

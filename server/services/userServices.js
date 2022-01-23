@@ -22,7 +22,11 @@ exports.registerUser = async function (
   email,
   password,
   passwordConfirm,
-  phone
+  phone,
+  city,
+  address,
+  postcode,
+  laundryId
 ) {
   //hash password
   const hashedPass = await bcrypt.hash(password, 12);
@@ -37,6 +41,10 @@ exports.registerUser = async function (
       password: hashedPass,
       phone,
       activation_link: activationLink,
+      city,
+      address,
+      postcode,
+      laundry_id: laundryId,
     })
     .returning([
       "id",
@@ -60,9 +68,9 @@ exports.registerUser = async function (
       firstName: newUser.first_name,
       lastName: newUser.last_name,
       isActivated: newUser.is_activated,
-      accessToken: tokens.accessToken
+      accessToken: tokens.accessToken,
     },
-    tokens:{...tokens}
+    tokens: { ...tokens },
   };
 };
 
@@ -93,9 +101,9 @@ exports.loginUser = async function (email, password) {
       firstName: user.first_name,
       lastName: user.last_name,
       isActivated: user.is_activated,
-      accessToken: tokens.accessToken
+      accessToken: tokens.accessToken,
     },
-    tokens:{...tokens}
+    tokens: { ...tokens },
   };
 };
 
@@ -119,8 +127,8 @@ exports.refresh = async function (refreshToken) {
       firstName: user.first_name,
       lastName: user.last_name,
       isActivated: user.is_activated,
-      accessToken: tokens.accessToken
+      accessToken: tokens.accessToken,
     },
-    tokens:{...tokens}
+    tokens: { ...tokens },
   };
 };

@@ -1,5 +1,5 @@
 import axios from "axios";
-import {axiosApi, API_URL } from "../axiosApi";
+import { axiosApi, API_URL } from "../axiosApi";
 
 import { AxiosResponse } from "axios";
 import {
