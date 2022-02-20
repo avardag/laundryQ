@@ -1,10 +1,10 @@
 const db = require("../db/db");
+const AppError = require("../utils/appError");
 const catchAsyncError = require("../utils/catchAsyncError");
+const usersRepository = require("../repositories/usersRepository");
 
 exports.getUsers = catchAsyncError(async (req, res, next) => {
-  const users = await db
-    .select("id", "email", "first_name", "last_name", "phone", "is_activated")
-    .from("users");
+  const users = await usersRepository.findAll();
   const mappedUsers = users.map((user) => ({
     id: user.id,
     email: user.email,
@@ -25,16 +25,33 @@ exports.getUsers = catchAsyncError(async (req, res, next) => {
  * Gets user info for logged in user
  router.get(/me', userController.getMe);
  */
-exports.getMe = (req, res, next) => {
-  // req.params.id = req.user.id;
-  next();
-};
+// exports.getMe = (req, res, next) => {
+//   // req.params.id = req.user.id;
+//   next();
+// };
 
-exports.userDashboard = async (req, res, next) => {
+// exports.userDashboard = async (req, res, next) => {
+//   res.status(200).json({
+//     status: "success",
+//     data: {
+//       user: "req.user,",
+//     },
+//   });
+// };
+
+exports.updateLaundry = catchAsyncError(async (req, res, next) => {
+  const { id, laundryId } = req.body;
+  if (!id || !laundryId) throw new AppError("Please choose Laundry", 400);
+
+  const user = await usersRepository.update(id, {
+    laundry_id: laundryId,
+  });
+  if (!user) throw new AppError("Could not find a user", 400);
+
   res.status(200).json({
     status: "success",
-    data: {
-      user: "req.user,",
+    user: {
+      laundryId: user.laundry_id,
     },
   });
-};
+});

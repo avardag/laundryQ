@@ -12,7 +12,6 @@ module.exports = function (req, res, next) {
     city,
     address,
     postcode,
-    laundryId,
   } = req.body;
 
   function validEmail(userEmail) {
@@ -31,7 +30,6 @@ module.exports = function (req, res, next) {
         city,
         address,
         postcode,
-        laundryId,
       ].every(Boolean)
     ) {
       return next(new AppError("Missing Credentials", 400));

@@ -1,17 +1,45 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
 import { useAuth } from "../hooks/useAuth";
 import { useAppDispatch, useAppSelector } from "../app/store";
 //actions
 import { login, signup } from "../app/features/authSlice";
-import { useState } from "react";
 import { SignupRequest } from "../app/features/types";
+
+function Copyright(props: any) {
+  return (
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {"Copyright © "}
+      <Link color="inherit" href="https://mndkjnjkncjkdncui.com/">
+        Your Website
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
 
 export default function Signup() {
   let navigate = useNavigate();
   let auth = useAuth();
   const dispatch = useAppDispatch();
   const authState = useAppSelector((state) => state.auth);
-  const [laundryId, setLaundryId] = useState<null | string>(null);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -37,9 +65,7 @@ export default function Signup() {
       city,
       address,
       postcode,
-      laundryId: null,
     };
-    if (laundryId) dataToSignup.laundryId = parseInt(laundryId);
 
     dispatch(signup(dataToSignup)).then((data) => {
       if (data.payload?.status === "success") navigate("/", { replace: true });
@@ -50,99 +76,139 @@ export default function Signup() {
   }
 
   return (
-    <div>
-      <h1>Signup here</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Email:{" "}
-            <input
-              name="email"
-              type="text"
-              placeholder="Email"
-              autoComplete="off"
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Password:{" "}
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              autoComplete="off"
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Confirm Password:{" "}
-            <input
-              name="passwordConfirm"
-              type="password"
-              placeholder="Confirm Password"
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            First Name:{" "}
-            <input name="firstName" type="text" placeholder="First Name" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Last Name:{" "}
-            <input name="lastName" type="text" placeholder="Last Name" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Phone: <input name="phone" type="text" placeholder="Phone number" />
-          </label>
-        </div>
-        <div>
-          <label>
-            City: <input name="city" type="text" placeholder="Your city" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Address:{" "}
-            <input name="address" type="text" placeholder="Your address" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Post code:{" "}
-            <input name="postcode" type="text" placeholder="Your postal code" />
-          </label>
-        </div>
-        <div>
-          <label>
-            laundryId
-            <select
-              name="laundryId"
-              onChange={(e) => setLaundryId(e.currentTarget.value)}
-            >
-              <option value="">Select</option>
-              <option value="1">Fisrt Laundry</option>
-              <option value="2">Second Laundry</option>
-            </select>
-          </label>
-        </div>
-
-        <button type="submit">Signup</button>
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign up
+        </Typography>
         {authState.error && (
           <div style={{ color: "red" }}>
             <p>{authState.errorMessage}</p>
           </div>
         )}
-        <div>
-          You have an account? Log in here <Link to="/login">Login Page</Link>
-        </div>
-      </form>
-    </div>
+        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                autoComplete="given-name"
+                name="firstName"
+                required
+                fullWidth
+                id="firstName"
+                label="First Name"
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                id="lastName"
+                label="Last Name"
+                name="lastName"
+                autoComplete="family-name"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="new-password"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="passwordConfirm"
+                label=" Confirm Password"
+                type="password"
+                id="password"
+                autoComplete="new-password"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="address"
+                label="Your Address"
+                name="address"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                autoComplete="city"
+                name="city"
+                required
+                fullWidth
+                id="city"
+                label="City"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                id="postcode"
+                label="Postcode"
+                name="postcode"
+                autoComplete="postal-code"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="phone"
+                label="Your phone"
+                name="phone"
+                autoComplete="tel"
+              />
+            </Grid>
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Sign Up
+          </Button>
+          <Grid container justifyContent="flex-end">
+            <Grid item>
+              <RouterLink to="/login">
+                Already have an account? Sign in
+              </RouterLink>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+      <Copyright sx={{ mt: 5 }} />
+    </Container>
   );
 }

@@ -8,6 +8,7 @@ const userServices = require("../services/userServices");
 const catchAsyncError = require("../utils/catchAsyncError");
 const AppError = require("../utils/appError");
 const { validateAccessToken } = require("../utils/jwtSignSend");
+const usersRepository = require("../repositories/usersRepository");
 
 /**
     400 Bad Request -the server cannot or will not process the request due to 
@@ -45,38 +46,8 @@ const setCookie = function (res, cookieData, cookieName = "jwt_r_auth") {
 //SIGNUP
 /////////////////////////
 exports.signup = catchAsyncError(async (req, res, next) => {
-  const {
-    firstName,
-    lastName,
-    email,
-    password,
-    passwordConfirm,
-    phone,
-    city,
-    address,
-    postcode,
-    laundryId,
-  } = req.body;
-
-  // check if user exists
-  const users = await db("users").select("*").where({ email });
-  if (users.length !== 0) {
-    return next(new AppError("User already exists", 400));
-  }
-
   //register user and get tokens
-  const userData = await userServices.registerUser(
-    firstName,
-    lastName,
-    email,
-    password,
-    passwordConfirm,
-    phone,
-    city,
-    address,
-    postcode,
-    laundryId
-  );
+  const userData = await userServices.registerUser(req.body);
   //set cookie
   setCookie(res, userData.tokens.refreshToken);
   //send response
@@ -168,10 +139,8 @@ exports.protect = catchAsyncError(async (req, res, next) => {
   const decodedUserData = await validateAccessToken(token);
   //jwt.verify will throw errors if invalid token or expired. in global Error handler
   //3) check if user still exists
-  const foundUser = await db("users")
-    .where({ id: decodedUserData.id })
-    .select("*")
-    .first();
+  const foundUser = await usersRepository.findById(decodedUserData.id);
+
   if (!foundUser) {
     return next(new AppError("User no longer exists", 401));
   }

@@ -9,9 +9,10 @@ const globalErrorHandler = require("./controllers/errorController");
 
 //routes
 const userRouter = require("./routes/userRoutes");
+const laundryRoutes = require("./routes/laundryRoutes");
 
 const ENV = process.env.NODE_ENV;
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5003;
 
 const app = express();
 app.use(helmet());
@@ -28,6 +29,7 @@ app.use(
 
 //Mounting router
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/laundry", laundryRoutes);
 
 if (ENV === "production") {
   app.use(express.static(path.join(__dirname, "../client/build")));

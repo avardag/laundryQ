@@ -6,6 +6,7 @@ import type {
   LoginRequest,
   SignupRequest,
   User,
+  UpdateUserRequest,
 } from "./types";
 import type { RootState } from "../store";
 import authServices from "../services/authServices";
@@ -30,8 +31,6 @@ export const login = createAsyncThunk<
     rejectValue: ApiErrorResponse; //type possible errors.
   }
 >(`auth/login`, async (data: LoginRequest, { getState, rejectWithValue }) => {
-  console.log("hit login thunk");
-
   const state = getState() as RootState;
   try {
     const res = await authServices.login(data);
@@ -99,6 +98,32 @@ export const checkAuthOnAppStart = createAsyncThunk(
     }
   }
 );
+export const updateLaundry = createAsyncThunk<
+  AuthApiResponse, // Return type of the payload creator i.e. what type will be returned as a result
+  UpdateUserRequest, // First argument to the payload creator i.e. what argument takes the function inside:
+  {
+    // Optional fields for defining thunkApi field types
+    rejectValue: ApiErrorResponse; //type possible errors.
+  }
+>(
+  `auth/updateLaundry`,
+  async (data: UpdateUserRequest, { getState, rejectWithValue }) => {
+    const state = getState() as RootState;
+    try {
+      const res = await authServices.updateUsersLaundry(data);
+
+      return res.data;
+    } catch (err: any) {
+      let error: AxiosError<ApiErrorResponse> = err; // cast the error for access
+      if (!error.response) {
+        throw err;
+      }
+      // We got validation errors, let's return those so we can reference in our component and set form errors
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -149,7 +174,6 @@ const authSlice = createSlice({
           : "";
         state.loading = false;
       })
-
       .addCase(signup.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.error = false;
@@ -161,6 +185,25 @@ const authSlice = createSlice({
         state.error = false;
       })
       .addCase(signup.rejected, (state, action) => {
+        state.error = true;
+        state.errorMessage = action.payload?.message
+          ? action.payload?.message
+          : "";
+        state.loading = false;
+      })
+      .addCase(updateLaundry.fulfilled, (state, action) => {
+        if (state.user) {
+          state.user.laundryId = action.payload.user.laundryId;
+        }
+        state.error = false;
+        state.errorMessage = "";
+        state.loading = false;
+      })
+      .addCase(updateLaundry.pending, (state, action) => {
+        state.loading = true;
+        state.error = false;
+      })
+      .addCase(updateLaundry.rejected, (state, action) => {
         state.error = true;
         state.errorMessage = action.payload?.message
           ? action.payload?.message

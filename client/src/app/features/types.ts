@@ -23,8 +23,19 @@ export interface User {
   role: "user" | "moderator" | "admin" | "superuser";
   city: string;
   address: string;
-  laundry_id?: number;
+  laundryId: number | null;
   postcode: string;
+}
+export interface UpdateUserRequest {
+  id: number;
+  laundryId?: number;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  email?: string;
+  city?: string;
+  address?: string;
+  postcode?: string;
 }
 
 export interface AuthApiResponse extends ApiResponse {
@@ -49,6 +60,5 @@ export interface SignupRequest extends LoginRequest {
   phone: string;
   city: string;
   address: string;
-  laundryId: null | number;
   postcode: string;
 }

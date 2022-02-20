@@ -6,6 +6,7 @@ import {
   AuthApiResponse,
   LoginRequest,
   SignupRequest,
+  UpdateUserRequest,
 } from "../features/types";
 
 async function login(
@@ -18,6 +19,11 @@ async function signup(
 ): Promise<AxiosResponse<AuthApiResponse>> {
   return axiosApi.post<AuthApiResponse>("/users/signup", data);
 }
+async function updateUsersLaundry(
+  data: UpdateUserRequest
+): Promise<AxiosResponse<AuthApiResponse>> {
+  return axiosApi.post<AuthApiResponse>("/users/update-laundry", data);
+}
 async function logout(): Promise<void> {
   return axiosApi.post("/users/logout");
 }
@@ -27,4 +33,4 @@ async function checkAuth(): Promise<AxiosResponse<AuthApiResponse>> {
   return axios.get(`${API_URL}/users/refresh`, { withCredentials: true });
 }
 
-export default { login, signup, logout, checkAuth };
+export default { login, signup, logout, checkAuth, updateUsersLaundry };

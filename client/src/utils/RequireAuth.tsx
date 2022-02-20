@@ -15,3 +15,52 @@ export default function RequireAuth({ children }: { children: JSX.Element }) {
 
   return children;
 }
+
+// interface Props {
+//   component: React.ComponentType;
+//   path?: string;
+//   roles: Array<string>;
+// }
+
+// export const PrivateRoute: React.FC<Props> = ({
+//   component: RouteComponent,
+//   roles,
+// }) => {
+//   let auth = useAuth();
+//   const userHasRequiredRole =
+//     auth.user && roles.includes(auth.user.role) ? true : false;
+
+//   if (auth.user && userHasRequiredRole) {
+//     return <RouteComponent />;
+//   }
+
+//   if (auth.user && !userHasRequiredRole) {
+//     // return <AccessDenied />
+//     return <div>Access denied</div>;
+//   }
+
+//   return <Navigate to="/" />;
+// };
+
+/**
+ //Usage
+ function App() {
+  return (
+    <div className="App">
+      <Header />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="*" element={<NotFound />} />
+        <Route
+          path="dashboard"
+          element={<PrivateRoute roles={[ROLE.ADMIN]} component={Dashboard} />}
+        />
+        <Route
+          path="users"
+          element={<PrivateRoute roles={[ROLE.ADMIN, ROLE.USER]} component={Users} />}
+        />
+      </Routes>
+    </div>
+  )
+}
+ */

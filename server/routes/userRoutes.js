@@ -17,7 +17,8 @@ router.get("/refresh", authController.refresh);
 router.use(authController.protect);
 router.get("/", userController.getUsers);
 router.get("/verify", authController.verify);
-router.get("/me", userController.getMe);
-router.get("/user-dashboard", userController.userDashboard);
+// router.get("/me", userController.getMe);
+// router.get("/user-dashboard", userController.userDashboard);
+router.post("/update-laundry", userController.updateLaundry);
 //protected routes here
 module.exports = router;

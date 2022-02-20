@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector, useDispatch } from "react-redux";
 import authReducer from "./features/authSlice";
 import usersReducer from "./features/usersSlice";
+import laundryReducer from "./features/laundrySlice";
 
 // import { newsApiSlice } from "./features/cryptoNews";
 
@@ -11,6 +12,7 @@ export const store = configureStore({
     // [authApiSlice.reducerPath]: authApiSlice.reducer,
     auth: authReducer,
     users: usersReducer,
+    laundry: laundryReducer,
   },
   // // Adding the api middleware enables caching, invalidation, polling,
   // // and other useful features of `rtk-query`.

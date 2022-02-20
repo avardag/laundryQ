@@ -1,6 +1,10 @@
 // Update with your config settings.
 const path = require("path");
-
+const types = require("pg").types;
+const TIMESTAMPTZ_OID = 1184;
+const TIMESTAMP_OID = 1114;
+types.setTypeParser(TIMESTAMPTZ_OID, (val) => val);
+types.setTypeParser(TIMESTAMP_OID, (val) => val);
 // require('dotenv').config({path: '../../'});
 
 module.exports = {
