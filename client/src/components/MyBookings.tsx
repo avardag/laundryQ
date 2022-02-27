@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { getUsersBookings, removeBooking } from "../app/features/laundrySlice";
+import { getUsersBookings, removeBooking } from "../app/features/bookingsSlice";
 import { useAppDispatch, useAppSelector } from "../app/store";
 import { useAuth } from "../hooks/useAuth";
 import Typography from "@mui/material/Typography";
@@ -8,7 +8,7 @@ import BookingCard from "./BookingCard";
 export default function MyBookings() {
   const auth = useAuth();
   const dispatch = useAppDispatch();
-  const bookings = useAppSelector((state) => state.laundry.usersBookings);
+  const bookings = useAppSelector((state) => state.bookings.usersBookings);
   useEffect(() => {
     auth.user && dispatch(getUsersBookings(auth.user.id));
   }, [auth]);

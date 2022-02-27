@@ -4,15 +4,19 @@ import { axiosApi, API_URL } from "../axiosApi";
 import { AxiosResponse } from "axios";
 
 import {
+  Laundry,
+  LaundryAddEditApiRes,
+  LaundryAllApiResponse,
+  LaundryGetMachinesApiRes,
+} from "../../types/laundryTypes";
+
+import {
   BookingDeletedResponse,
   BookingNewApiResp,
   BookingRequest,
   Bookings,
-  LaundryAllApiResponse,
-  LaundryGetMachinesApiRes,
   UsersBookings,
-} from "../features/laundryTypes";
-
+} from "../../types/bokingsTypes";
 async function getAll(): Promise<AxiosResponse<LaundryAllApiResponse>> {
   return axiosApi.get<LaundryAllApiResponse>("/laundry");
 }
@@ -46,7 +50,11 @@ async function removeBooking(
     `/laundry/bookings/${bookingId}`
   );
 }
-
+async function createLaundry(
+  data: Omit<Laundry, "id" | "isActive">
+): Promise<AxiosResponse<LaundryAddEditApiRes>> {
+  return axiosApi.post<LaundryAddEditApiRes>(`/laundry`);
+}
 export default {
   getAll,
   getMachinesByLaundry,
@@ -54,4 +62,5 @@ export default {
   getBookingsByLaundry,
   getBookingsByUser,
   removeBooking,
+  createLaundry,
 };

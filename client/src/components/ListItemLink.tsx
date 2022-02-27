@@ -29,24 +29,22 @@ export default function ListItemLink(props: ListItemLinkProps) {
     [to]
   );
   return (
-    <li>
-      <ListItem button component={renderLink}>
-        {icon ? (
-          <ListItemIcon
-            sx={{
-              minWidth: {
-                xs: 26, // theme.breakpoints.up('xs')
-                sm: 40, // theme.breakpoints.up('sm')
-                md: 46, // theme.breakpoints.up('md')
-                lg: 56, // theme.breakpoints.up('lg')
-              },
-            }}
-          >
-            {icon}
-          </ListItemIcon>
-        ) : null}
-        <ListItemText primary={primary} />
-      </ListItem>
-    </li>
+    <ListItem button component={renderLink}>
+      {icon ? (
+        <ListItemIcon
+          sx={{
+            minWidth: {
+              xs: 26, // theme.breakpoints.up('xs')
+              sm: 40, // theme.breakpoints.up('sm')
+              md: 46, // theme.breakpoints.up('md')
+              lg: 56, // theme.breakpoints.up('lg')
+            },
+          }}
+        >
+          {icon}
+        </ListItemIcon>
+      ) : null}
+      <ListItemText primary={primary} />
+    </ListItem>
   );
 }

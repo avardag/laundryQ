@@ -3,6 +3,7 @@ import { TypedUseSelectorHook, useSelector, useDispatch } from "react-redux";
 import authReducer from "./features/authSlice";
 import usersReducer from "./features/usersSlice";
 import laundryReducer from "./features/laundrySlice";
+import bookingsReducer from "./features/bookingsSlice";
 
 // import { newsApiSlice } from "./features/cryptoNews";
 
@@ -13,6 +14,7 @@ export const store = configureStore({
     auth: authReducer,
     users: usersReducer,
     laundry: laundryReducer,
+    bookings: bookingsReducer,
   },
   // // Adding the api middleware enables caching, invalidation, polling,
   // // and other useful features of `rtk-query`.

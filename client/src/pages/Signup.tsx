@@ -15,7 +15,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useAppDispatch, useAppSelector } from "../app/store";
 //actions
 import { login, signup } from "../app/features/authSlice";
-import { SignupRequest } from "../app/features/types";
+import { SignupRequest } from "../types/types";
 
 function Copyright(props: any) {
   return (

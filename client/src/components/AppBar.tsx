@@ -14,7 +14,7 @@ import Divider from "@mui/material/Divider";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
-import { User } from "../app/features/types";
+import { User } from "../types/types";
 
 interface AppBarProps {
   user: User | null;

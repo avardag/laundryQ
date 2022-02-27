@@ -17,6 +17,7 @@ import MyLaundry from "./components/MyLaundry";
 import MyInfo from "./components/MyInfo";
 import Layout from "./components/Layout";
 import CircularLoading from "./components/CircularLoading";
+import Laundry from "./pages/Laundry";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -44,6 +45,14 @@ function App() {
             element={
               <RequireAuth>
                 <Users />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/laundry"
+            element={
+              <RequireAuth>
+                <Laundry />
               </RequireAuth>
             }
           />

@@ -7,7 +7,7 @@ import {
   LoginRequest,
   SignupRequest,
   UpdateUserRequest,
-} from "../features/types";
+} from "../../types/types";
 
 async function login(
   data: LoginRequest

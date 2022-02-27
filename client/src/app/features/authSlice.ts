@@ -7,7 +7,7 @@ import type {
   SignupRequest,
   User,
   UpdateUserRequest,
-} from "./types";
+} from "../../types/types";
 import type { RootState } from "../store";
 import authServices from "../services/authServices";
 
@@ -98,7 +98,7 @@ export const checkAuthOnAppStart = createAsyncThunk(
     }
   }
 );
-export const updateLaundry = createAsyncThunk<
+export const updateUserLaundry = createAsyncThunk<
   AuthApiResponse, // Return type of the payload creator i.e. what type will be returned as a result
   UpdateUserRequest, // First argument to the payload creator i.e. what argument takes the function inside:
   {
@@ -106,7 +106,7 @@ export const updateLaundry = createAsyncThunk<
     rejectValue: ApiErrorResponse; //type possible errors.
   }
 >(
-  `auth/updateLaundry`,
+  `auth/updateUserLaundry`,
   async (data: UpdateUserRequest, { getState, rejectWithValue }) => {
     const state = getState() as RootState;
     try {
@@ -191,7 +191,7 @@ const authSlice = createSlice({
           : "";
         state.loading = false;
       })
-      .addCase(updateLaundry.fulfilled, (state, action) => {
+      .addCase(updateUserLaundry.fulfilled, (state, action) => {
         if (state.user) {
           state.user.laundryId = action.payload.user.laundryId;
         }
@@ -199,11 +199,11 @@ const authSlice = createSlice({
         state.errorMessage = "";
         state.loading = false;
       })
-      .addCase(updateLaundry.pending, (state, action) => {
+      .addCase(updateUserLaundry.pending, (state, action) => {
         state.loading = true;
         state.error = false;
       })
-      .addCase(updateLaundry.rejected, (state, action) => {
+      .addCase(updateUserLaundry.rejected, (state, action) => {
         state.error = true;
         state.errorMessage = action.payload?.message
           ? action.payload?.message

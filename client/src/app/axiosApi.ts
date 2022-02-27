@@ -1,8 +1,7 @@
 import axios from "axios";
-import { AuthApiResponse } from "./features/types";
+import { AuthApiResponse } from "../types/types";
 import { Store } from "@reduxjs/toolkit";
 import { logoutOnExpire } from "./features/authSlice";
-
 
 // export const API_URL = "http://localhost:5000/api/v1";
 export const API_URL = "/api";
@@ -35,20 +34,17 @@ const setupInterceptors = (store: Store) => {
               withCredentials: true,
             }
           );
-          localStorage.setItem(
-            "accessToken",
-            response.data.user.accessToken
-          );
+          localStorage.setItem("accessToken", response.data.user.accessToken);
           return axiosApi.request(originalRequest);
         } catch (e) {
           // logout()
-          store.dispatch(logoutOnExpire())
+          store.dispatch(logoutOnExpire());
           throw e;
         }
       }
       throw err; //code didnt pass from if clause, or err is not 401, throw that error
     }
   );
-}
+};
 
 export { axiosApi, setupInterceptors };

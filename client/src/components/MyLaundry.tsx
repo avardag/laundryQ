@@ -1,17 +1,14 @@
 import React, { useEffect } from "react";
-import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useAuth } from "../hooks/useAuth";
 import { useAppSelector, useAppDispatch } from "../app/store";
 import { getAllLaundries } from "../app/features/laundrySlice";
-import { updateLaundry } from "../app/features/authSlice";
+import { updateUserLaundry } from "../app/features/authSlice";
 
 export default function MyLaundry() {
   const auth = useAuth();
@@ -28,7 +25,7 @@ export default function MyLaundry() {
   const handleSubmit = () => {
     if (laundry && auth.user?.id) {
       let laundryId = parseInt(laundry);
-      dispatch(updateLaundry({ id: auth.user?.id, laundryId }));
+      dispatch(updateUserLaundry({ id: auth.user?.id, laundryId }));
     }
   };
   const ITEM_HEIGHT = 48;

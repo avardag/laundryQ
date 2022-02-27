@@ -1,6 +1,6 @@
 import { useAppDispatch } from "../app/store";
 import { useNavigate, Outlet } from "react-router-dom";
-import { User } from "../app/features/types";
+import { User } from "../types/types";
 import { logout } from "../app/features/authSlice";
 import MenuAppBar from "./AppBar";
 

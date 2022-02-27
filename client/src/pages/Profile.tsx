@@ -13,12 +13,17 @@ import ListItemLink from "../components/ListItemLink";
 export default function Profile() {
   return (
     <Container maxWidth="md">
-      <Typography variant="h3" component="h2" textAlign="center" mt={5}>
+      <Typography variant="h3" component="h2" textAlign="center" m={5}>
         Your profile
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={3} borderRight="1px solid black">
-          <List aria-label="main mailbox folders">
+        <Grid
+          item
+          xs={12}
+          sm={3}
+          sx={{ borderRight: { xs: "none", sm: "1px solid grey" } }}
+        >
+          <List aria-label="main profile folders">
             <ListItemLink
               to="/profile/my-bookings"
               primary="My bookings"
@@ -36,7 +41,7 @@ export default function Profile() {
             />
           </List>
         </Grid>
-        <Grid item xs={9}>
+        <Grid item xs={12} sm={9}>
           <Outlet />
         </Grid>
       </Grid>

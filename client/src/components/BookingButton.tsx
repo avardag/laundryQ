@@ -1,7 +1,8 @@
 import Button from "@mui/material/Button";
 
 import { TimeSlot } from "../utils/timeSlots";
-import { Booking, Machine } from "../app/features/laundryTypes";
+import { Machine } from "../types/laundryTypes";
+import { Booking } from "../types/bokingsTypes";
 
 export type BookingDetails = {
   dateTimeFrom: number;

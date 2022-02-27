@@ -18,19 +18,19 @@ exports.getLaundries = catchAsyncError(async (req, res, next) => {
 });
 
 exports.createLaundry = catchAsyncError(async (req, res, next) => {
-  const { name, address, phone, city, postcode, adminId } = req.body;
-  const newLaundry = await laundriesRepository.create({
+  const { name, address, phone, city, postcode, admin_id } = req.body;
+  const laundry = await laundriesRepository.create({
     name,
     address,
     phone,
     city,
     postcode,
-    admin_id: adminId ? adminId : null,
+    admin_id: admin_id ? admin_id : null,
   });
   res.status(200).json({
     status: "success",
     data: {
-      newLaundry,
+      laundry,
     },
   });
 });

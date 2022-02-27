@@ -10,6 +10,7 @@ const selectableProps = [
   "city",
   "postcode",
   "admin_id",
+  "is_active",
 ];
 
 const timeout = 1000;
