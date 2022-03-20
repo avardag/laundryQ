@@ -7,7 +7,9 @@ import {
   Laundry,
   LaundryAddEditApiRes,
   LaundryAllApiResponse,
-  LaundryGetMachinesApiRes,
+  MachinesApiRes,
+  Machine,
+  NewMachineApiRes,
 } from "../../types/laundryTypes";
 
 import {
@@ -22,10 +24,8 @@ async function getAll(): Promise<AxiosResponse<LaundryAllApiResponse>> {
 }
 async function getMachinesByLaundry(
   laundryId: number
-): Promise<AxiosResponse<LaundryGetMachinesApiRes>> {
-  return axiosApi.get<LaundryGetMachinesApiRes>(
-    `/laundry/machines/${laundryId}`
-  );
+): Promise<AxiosResponse<MachinesApiRes>> {
+  return axiosApi.get<MachinesApiRes>(`/laundry/machines/${laundryId}`);
 }
 
 async function createBooking(
@@ -51,9 +51,14 @@ async function removeBooking(
   );
 }
 async function createLaundry(
-  data: Omit<Laundry, "id" | "isActive">
+  data: Omit<Laundry, "id" | "is_active">
 ): Promise<AxiosResponse<LaundryAddEditApiRes>> {
-  return axiosApi.post<LaundryAddEditApiRes>(`/laundry`);
+  return axiosApi.post<LaundryAddEditApiRes>(`/laundry`, data);
+}
+async function createMachine(
+  data: Omit<Machine, "id">
+): Promise<AxiosResponse<NewMachineApiRes>> {
+  return axiosApi.post<NewMachineApiRes>(`/laundry/machines`, data);
 }
 export default {
   getAll,
@@ -63,4 +68,5 @@ export default {
   getBookingsByUser,
   removeBooking,
   createLaundry,
+  createMachine,
 };

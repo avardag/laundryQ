@@ -19,6 +19,7 @@ exports.getLaundries = catchAsyncError(async (req, res, next) => {
 
 exports.createLaundry = catchAsyncError(async (req, res, next) => {
   const { name, address, phone, city, postcode, admin_id } = req.body;
+
   const laundry = await laundriesRepository.create({
     name,
     address,

@@ -24,11 +24,16 @@ export interface Machine {
   id: number;
   size: number;
   number: number;
-  laundry_id: number;
+  laundryId: number;
 }
 
-export interface LaundryGetMachinesApiRes extends ApiResponse {
+export interface MachinesApiRes extends ApiResponse {
   data: {
     machines: Machine[];
+  };
+}
+export interface NewMachineApiRes extends ApiResponse {
+  data: {
+    newMachine: Machine;
   };
 }

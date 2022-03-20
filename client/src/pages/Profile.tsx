@@ -2,6 +2,7 @@ import React from "react";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
+import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import LocalLaundryServiceIcon from "@mui/icons-material/LocalLaundryService";
 import BookOnlineIcon from "@mui/icons-material/BookOnline";
@@ -38,6 +39,12 @@ export default function Profile() {
               to="/profile/my-info"
               primary="My Info"
               icon={<AccountBoxIcon />}
+            />
+            <Divider />
+            <ListItemLink
+              to="/profile/laundries"
+              primary="Manage Laundries"
+              icon={<LocalLaundryServiceIcon />}
             />
           </List>
         </Grid>

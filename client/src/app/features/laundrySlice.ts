@@ -6,21 +6,26 @@ import type { ApiErrorResponse } from "../../types/types";
 import {
   Laundry,
   Machine,
-  LaundryGetMachinesApiRes,
+  MachinesApiRes,
   LaundryAddEditApiRes,
+  NewMachineApiRes,
 } from "../../types/laundryTypes";
 import laundryServices from "../services/laundryServices";
 
 interface LaundryState {
   laundries: Laundry[];
+  laundryNewOrEdit: Laundry | null;
   machines: Machine[];
+  machinesNew: Machine[];
   error: boolean;
   errorMessage: string;
   loading: boolean;
 }
 const initialState: LaundryState = {
   laundries: [],
+  laundryNewOrEdit: null,
   machines: [],
+  machinesNew: [],
   error: false,
   errorMessage: "",
   loading: false,
@@ -44,7 +49,7 @@ export const getAllLaundries = createAsyncThunk(
 
 export const createLaundry = createAsyncThunk<
   LaundryAddEditApiRes, // Return type of the payload creator i.e. what type will be returned as a result
-  Omit<Laundry, "id" | "isActive">, // First argument to the payload creator i.e. what argument takes the function inside:
+  Omit<Laundry, "id" | "is_active">, // First argument to the payload creator i.e. what argument takes the function inside:
   {
     // Optional fields for defining thunkApi field types
     rejectValue: ApiErrorResponse; //type possible errors.
@@ -63,8 +68,29 @@ export const createLaundry = createAsyncThunk<
     return rejectWithValue(error.response.data);
   }
 });
+export const createMachine = createAsyncThunk<
+  NewMachineApiRes, // Return type of the payload creator i.e. what type will be returned as a result
+  Omit<Machine, "id">, // First argument to the payload creator i.e. what argument takes the function inside:
+  {
+    // Optional fields for defining thunkApi field types
+    rejectValue: ApiErrorResponse; //type possible errors.
+  }
+>(`laundry/createMachine`, async (data, { getState, rejectWithValue }) => {
+  try {
+    const res = await laundryServices.createMachine(data);
 
-export const getMachines = createAsyncThunk<LaundryGetMachinesApiRes, number>(
+    return res.data;
+  } catch (err: any) {
+    let error: AxiosError<ApiErrorResponse> = err; // cast the error for access
+    if (!error.response) {
+      throw err;
+    }
+    // We got validation errors, let's return those so we can reference in our component and set form errors
+    return rejectWithValue(error.response.data);
+  }
+});
+
+export const getMachines = createAsyncThunk<MachinesApiRes, number>(
   `laundry/getMachines`,
   async (laundryId: number, { getState, rejectWithValue }) => {
     try {
@@ -124,6 +150,7 @@ const laundrySlice = createSlice({
       })
       .addCase(createLaundry.fulfilled, (state, action) => {
         state.laundries.push(action.payload.data.laundry);
+        state.laundryNewOrEdit = action.payload.data.laundry;
         state.errorMessage = "";
         state.loading = false;
       })
@@ -136,6 +163,22 @@ const laundrySlice = createSlice({
         state.errorMessage = action.payload?.message
           ? action.payload?.message
           : "Laundry can't be added";
+        state.loading = false;
+      })
+      .addCase(createMachine.fulfilled, (state, action) => {
+        state.machinesNew.push(action.payload.data.newMachine);
+        state.errorMessage = "";
+        state.loading = false;
+      })
+      .addCase(createMachine.pending, (state, action) => {
+        state.loading = true;
+        state.error = false;
+      })
+      .addCase(createMachine.rejected, (state, action) => {
+        state.error = true;
+        state.errorMessage = action.payload?.message
+          ? action.payload?.message
+          : "Machine can't be added";
         state.loading = false;
       });
   },

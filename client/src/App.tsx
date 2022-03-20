@@ -18,6 +18,7 @@ import MyInfo from "./components/MyInfo";
 import Layout from "./components/Layout";
 import CircularLoading from "./components/CircularLoading";
 import Laundry from "./pages/Laundry";
+import Laundries from "./components/Laundries";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -75,6 +76,7 @@ function App() {
             <Route path="my-bookings" element={<MyBookings />} />
             <Route path="my-laundry" element={<MyLaundry />} />
             <Route path="my-info" element={<MyInfo />} />
+            <Route path="laundries" element={<Laundries />} />
           </Route>
           <Route
             path="*"
