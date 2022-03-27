@@ -36,6 +36,38 @@ exports.createLaundry = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.removeLaundry = catchAsyncError(async (req, res, next) => {
+  const laundryId = req.params.laundryId;
+
+  const laundryToDel = await laundriesRepository.getOneById(laundryId);
+  if (!laundryToDel) throw new AppError("Laundry Not found", 400);
+
+  // if (req.user.id !== laundryToDel.user_id)
+  //   throw new AppError("Forbidden to delete", 403);
+  //delete
+  await laundriesRepository.destroy(laundryId);
+  res.status(200).json({
+    status: "success",
+    data: { deletedId: laundryToDel.id },
+  });
+});
+
+exports.activation = catchAsyncError(async (req, res, next) => {
+  const laundryId = req.params.laundryId;
+  const laundryToActivate = await laundriesRepository.getOneById(laundryId);
+  if (!laundryToActivate) throw new AppError("Laundry Not found", 400);
+
+  const laundry = await laundriesRepository.update(laundryId, {
+    is_activated: !laundryToActivate.is_activated,
+  });
+  res.status(200).json({
+    status: "success",
+    data: {
+      laundry,
+    },
+  });
+});
+
 exports.createMachine = catchAsyncError(async (req, res, next) => {
   const { laundryId, size, number } = req.body;
   const newMachine = await machinesRepository.create({

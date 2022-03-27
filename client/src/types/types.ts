@@ -6,6 +6,11 @@ export interface ApiErrorResponse {
 export interface ApiResponse {
   status: "success" | "error" | "fail";
 }
+export interface DeletedResponse extends ApiResponse {
+  data: {
+    deletedId: number;
+  };
+}
 // enum Roles {
 //   user = "user",
 //   moderator = "moderator",

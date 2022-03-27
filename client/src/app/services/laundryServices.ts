@@ -13,12 +13,12 @@ import {
 } from "../../types/laundryTypes";
 
 import {
-  BookingDeletedResponse,
   BookingNewApiResp,
   BookingRequest,
   Bookings,
   UsersBookings,
 } from "../../types/bokingsTypes";
+import { DeletedResponse } from "../../types/types";
 async function getAll(): Promise<AxiosResponse<LaundryAllApiResponse>> {
   return axiosApi.get<LaundryAllApiResponse>("/laundry");
 }
@@ -45,15 +45,18 @@ async function getBookingsByUser(
 }
 async function removeBooking(
   bookingId: number
-): Promise<AxiosResponse<BookingDeletedResponse>> {
-  return axiosApi.delete<BookingDeletedResponse>(
-    `/laundry/bookings/${bookingId}`
-  );
+): Promise<AxiosResponse<DeletedResponse>> {
+  return axiosApi.delete<DeletedResponse>(`/laundry/bookings/${bookingId}`);
 }
 async function createLaundry(
   data: Omit<Laundry, "id" | "is_active">
 ): Promise<AxiosResponse<LaundryAddEditApiRes>> {
   return axiosApi.post<LaundryAddEditApiRes>(`/laundry`, data);
+}
+async function removeLaundry(
+  laundryId: number
+): Promise<AxiosResponse<DeletedResponse>> {
+  return axiosApi.delete<DeletedResponse>(`/laundry/${laundryId}`);
 }
 async function createMachine(
   data: Omit<Machine, "id">
@@ -68,5 +71,6 @@ export default {
   getBookingsByUser,
   removeBooking,
   createLaundry,
+  removeLaundry,
   createMachine,
 };

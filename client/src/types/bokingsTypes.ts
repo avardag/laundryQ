@@ -39,8 +39,3 @@ export interface UsersBookings extends ApiResponse {
     bookings: UsersBooking[];
   };
 }
-export interface BookingDeletedResponse extends ApiResponse {
-  data: {
-    deletedId: number;
-  };
-}

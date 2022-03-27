@@ -150,6 +150,16 @@ exports.protect = catchAsyncError(async (req, res, next) => {
   next();
 });
 
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    //roles ['admin', 'lead-guide']
+    if (!roles.includes(req.user.role)) {
+      return next(new AppError("No permission to perform this action", 403));
+    }
+    next();
+  };
+};
+
 //endpoint just to check if user is signed in
 exports.verify = (req, res) => {
   const { email, first_name: firstName, last_name: lastName } = req.user;

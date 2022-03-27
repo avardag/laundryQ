@@ -22,5 +22,13 @@ router.get(
 );
 router.get("/bookings/user/:userId", laundryController.getBookingsByUser);
 router.delete("/bookings/:bookingId", laundryController.removeBooking);
-//protected routes here
+
+//will run restrictTo MW for all routes after this line
+router.use(authController.restrictTo("admin", "superuser"));
+//activate laundry
+router.post("/activate/:laundryId", laundryController.activation);
+
+//delete laundry
+router.delete("/:laundryId", laundryController.removeLaundry);
+
 module.exports = router;

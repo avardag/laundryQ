@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
@@ -13,7 +13,11 @@ import MachineCard from "../components/MachineCard";
 import { useAuth } from "../hooks/useAuth";
 import { useAppDispatch, useAppSelector } from "../app/store";
 //actions
-import { createLaundry, createMachine } from "../app/features/laundrySlice";
+import {
+  createLaundry,
+  createMachine,
+  emptyNewLaundryState,
+} from "../app/features/laundrySlice";
 import { Laundry as LaundryType, Machine } from "../types/laundryTypes";
 import MachineAddForm from "../components/MachineAddForm";
 
@@ -33,6 +37,12 @@ export default function Laundry() {
 
   // console.log(locationState);
   const [formSubmitted, setFormSubmitted] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      dispatch(emptyNewLaundryState());
+    };
+  }, []);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -195,7 +205,7 @@ export default function Laundry() {
                 Laundry's Machines
               </Typography>
               {machinesNew.map((machine: Machine) => (
-                <MachineCard machine={machine} />
+                <MachineCard machine={machine} key={machine.id} />
               ))}
             </Box>
           )}

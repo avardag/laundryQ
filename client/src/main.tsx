@@ -7,6 +7,7 @@ import App from "./App";
 import { store } from "./app/store";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
+import { SnackbarProvider } from "notistack";
 import theme from "./theme";
 
 import { setupInterceptors } from "./app/axiosApi";
@@ -19,9 +20,11 @@ ReactDOM.render(
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Router>
-          <App />
-        </Router>
+        <SnackbarProvider>
+          <Router>
+            <App />
+          </Router>
+        </SnackbarProvider>
       </ThemeProvider>
     </Provider>
   </React.StrictMode>,

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
-import type { ApiErrorResponse } from "../../types/types";
+import type { ApiErrorResponse, DeletedResponse } from "../../types/types";
 // import type { RootState } from "../store";
 import {
   BookingNewApiResp,
@@ -9,7 +9,6 @@ import {
   Bookings,
   UsersBooking,
   UsersBookings,
-  BookingDeletedResponse,
 } from "../../types/bokingsTypes";
 import laundryServices from "../services/laundryServices";
 
@@ -102,7 +101,7 @@ export const getUsersBookings = createAsyncThunk<
   }
 );
 export const removeBooking = createAsyncThunk<
-  BookingDeletedResponse, // Return type of the payload creator i.e. what type will be returned as a result
+  DeletedResponse, // Return type of the payload creator i.e. what type will be returned as a result
   number, // First argument to the payload creator i.e. what argument takes the function inside:
   {
     // Optional fields for defining thunkApi field types
@@ -113,6 +112,7 @@ export const removeBooking = createAsyncThunk<
   async (bookingId: number, { getState, rejectWithValue }) => {
     try {
       const res = await laundryServices.removeBooking(bookingId);
+
       return res.data;
     } catch (err: any) {
       let error: AxiosError<ApiErrorResponse> = err; // cast the error for access
