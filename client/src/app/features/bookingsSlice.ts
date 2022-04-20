@@ -10,7 +10,7 @@ import {
   UsersBooking,
   UsersBookings,
 } from "../../types/bokingsTypes";
-import laundryServices from "../services/laundryServices";
+import bookingsServices from "../services/bookingsServices";
 
 interface BookingsState {
   bookings: Booking[];
@@ -38,7 +38,7 @@ export const createBooking = createAsyncThunk<
   `laundry/createBooking`,
   async (data: BookingRequest, { getState, rejectWithValue }) => {
     try {
-      const res = await laundryServices.createBooking(data);
+      const res = await bookingsServices.createBooking(data);
 
       return res.data;
     } catch (err: any) {
@@ -62,7 +62,7 @@ export const getBookings = createAsyncThunk<
   `laundry/getBookings`,
   async (laundryId: number, { getState, rejectWithValue }) => {
     try {
-      const res = await laundryServices.getBookingsByLaundry(laundryId);
+      const res = await bookingsServices.getBookingsByLaundry(laundryId);
 
       return res.data;
     } catch (err: any) {
@@ -87,7 +87,7 @@ export const getUsersBookings = createAsyncThunk<
   `laundry/getUsersBookings`,
   async (userId: number, { getState, rejectWithValue }) => {
     try {
-      const res = await laundryServices.getBookingsByUser(userId);
+      const res = await bookingsServices.getBookingsByUser(userId);
 
       return res.data;
     } catch (err: any) {
@@ -111,7 +111,7 @@ export const removeBooking = createAsyncThunk<
   `laundry/removeBooking`,
   async (bookingId: number, { getState, rejectWithValue }) => {
     try {
-      const res = await laundryServices.removeBooking(bookingId);
+      const res = await bookingsServices.removeBooking(bookingId);
 
       return res.data;
     } catch (err: any) {

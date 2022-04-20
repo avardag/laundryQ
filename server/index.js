@@ -10,6 +10,7 @@ const globalErrorHandler = require("./controllers/errorController");
 //routes
 const userRouter = require("./routes/userRoutes");
 const laundryRoutes = require("./routes/laundryRoutes");
+const bookingsRoutes = require("./routes/bookingsRoutes");
 
 const ENV = process.env.NODE_ENV;
 const PORT = process.env.PORT || 5003;
@@ -30,6 +31,7 @@ app.use(
 //Mounting router
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/laundry", laundryRoutes);
+app.use("/api/v1/bookings", bookingsRoutes);
 
 if (ENV === "production") {
   app.use(express.static(path.join(__dirname, "../client/build")));

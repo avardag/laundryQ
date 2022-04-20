@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useSnackbar } from "notistack";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -32,6 +33,9 @@ export default function Bookings() {
 
   const machines = useAppSelector((state) => state.laundry.machines);
   const bookings = useAppSelector((state) => state.bookings.bookings);
+  //
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  //
   if (!auth.user?.laundryId) {
     return (
       <Container maxWidth="md">
@@ -95,6 +99,9 @@ export default function Bookings() {
         machineId: bookingDetails.machine.id,
       };
       dispatch(createBooking(dataToSubmit));
+      enqueueSnackbar(`Booking added`, {
+        variant: "success",
+      });
       setLoading(false);
     }
     setDialogOpen(false);

@@ -19,6 +19,15 @@ exports.findAllByLaundryId = async function (laundry_id) {
     .timeout(timeout);
 };
 
+exports.getOneById = async function (id) {
+  const [machineToDelete] = await db
+    .select(selectableProps)
+    .from(tableName)
+    .where({ id })
+    .timeout(timeout);
+  return machineToDelete;
+};
+
 exports.destroy = async function (id) {
   return await db.del().from(tableName).where({ id }).timeout(timeout);
 };

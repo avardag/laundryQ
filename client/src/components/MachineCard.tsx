@@ -13,6 +13,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   minWidth: 275,
   display: "flex",
   justifyContent: "space-between",
+  margin: "10px 0",
   // color: theme.palette.main,
 }));
 
@@ -23,8 +24,12 @@ const StyledSpan = styled("span")({
 // export default function MachineCard({ id, size, number }: Machine) {
 type MachineCardProps = {
   machine: Machine;
+  onMachineDelete: (id: number) => void;
 };
-export default function MachineCard({ machine }: MachineCardProps) {
+export default function MachineCard({
+  machine,
+  onMachineDelete,
+}: MachineCardProps) {
   return (
     <StyledCard>
       <CardContent>
@@ -36,7 +41,12 @@ export default function MachineCard({ machine }: MachineCardProps) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" variant="outlined" color="error">
+        <Button
+          onClick={() => onMachineDelete(machine.id)}
+          size="small"
+          variant="outlined"
+          color="error"
+        >
           Delete
         </Button>
       </CardActions>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSnackbar } from "notistack";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -13,38 +14,36 @@ import MachineCard from "../components/MachineCard";
 import { useAuth } from "../hooks/useAuth";
 import { useAppDispatch, useAppSelector } from "../app/store";
 //actions
-import {
-  createLaundry,
-  createMachine,
-  emptyNewLaundryState,
-} from "../app/features/laundrySlice";
+import { createLaundry, createMachine } from "../app/features/laundrySlice";
 import { Laundry as LaundryType, Machine } from "../types/laundryTypes";
 import MachineAddForm from "../components/MachineAddForm";
+//axios
+import laundryServices from "../app/services/laundryServices";
 
-type locationStateProps = {
-  id: number;
-} | null;
+type locationStateProps = LaundryType | null;
 
 export default function Laundry() {
   //TODO: Refactor. Split this component to 2 or three
   const location = useLocation();
   const locationState = location.state as locationStateProps;
+  console.log("locationState", locationState);
+
   let navigate = useNavigate();
   let auth = useAuth();
   const dispatch = useAppDispatch();
-  const newLaundry = useAppSelector((state) => state.laundry.laundryNewOrEdit);
-  const machinesNew = useAppSelector((state) => state.laundry.machinesNew);
+  const [newLaundry, setNewLaundry] = useState<LaundryType | null>(null);
+  console.log("newLaundry", newLaundry);
 
-  // console.log(locationState);
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [newMachines, setNewMachines] = useState<Machine[]>([]);
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   useEffect(() => {
-    return () => {
-      dispatch(emptyNewLaundryState());
-    };
+    locationState && setNewLaundry(locationState);
+    return () => {};
   }, []);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     let formData = new FormData(event.currentTarget);
@@ -63,16 +62,24 @@ export default function Laundry() {
       postcode,
       admin_id: isAdmin,
     };
-    dispatch(createLaundry(laundryData)).then((data) => {
-      // if (data.payload?.status === "success") navigate("/", { replace: true });
-      if (data.payload?.status === "success") {
-        setFormSubmitted(true);
-      }
-    });
+    dispatch(createLaundry(laundryData))
+      .unwrap()
+      .then((originalPromiseResult) => {
+        setNewLaundry(originalPromiseResult.data.laundry);
+        enqueueSnackbar(
+          `Laundry ${originalPromiseResult.data.laundry.name} added`,
+          {
+            variant: "success",
+          }
+        );
+      })
+      .catch((rejectedValueOrSerializedError) => {
+        enqueueSnackbar(rejectedValueOrSerializedError.message, {
+          variant: "error",
+        });
+      });
   }
   function handleMachineAdd(machNumber: number, machSize: number) {
-    console.log(newLaundry);
-
     newLaundry &&
       dispatch(
         createMachine({
@@ -80,7 +87,45 @@ export default function Laundry() {
           number: machNumber,
           laundryId: newLaundry?.id,
         })
-      ).then((data) => console.log(data));
+      )
+        .unwrap()
+        .then((originalPromiseResult) => {
+          setNewMachines([
+            ...newMachines,
+            originalPromiseResult.data.newMachine,
+          ]);
+          enqueueSnackbar(
+            `Machine ${originalPromiseResult.data.newMachine.number} added`,
+            {
+              variant: "success",
+            }
+          );
+        })
+        .catch((rejectedValueOrSerializedError) => {
+          enqueueSnackbar(rejectedValueOrSerializedError.message, {
+            variant: "error",
+          });
+        });
+  }
+
+  function handleMachineDelete(id: number) {
+    laundryServices
+      .removeMachine(id)
+      .then((result) => {
+        setNewMachines(
+          newMachines.filter(
+            (machine) => machine.id !== result.data.data.deletedId
+          )
+        );
+        enqueueSnackbar(`Machine id:${result.data.data.deletedId} removed`, {
+          variant: "success",
+        });
+      })
+      .catch((err) => {
+        enqueueSnackbar(err.message, {
+          variant: "error",
+        });
+      });
   }
   return (
     <Box>
@@ -204,8 +249,12 @@ export default function Laundry() {
               >
                 Laundry's Machines
               </Typography>
-              {machinesNew.map((machine: Machine) => (
-                <MachineCard machine={machine} key={machine.id} />
+              {newMachines.map((machine) => (
+                <MachineCard
+                  machine={machine}
+                  onMachineDelete={handleMachineDelete}
+                  key={machine.id}
+                />
               ))}
             </Box>
           )}

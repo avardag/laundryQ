@@ -14,14 +14,8 @@ router.use(authController.protect);
 
 router.post("/", laundryController.createLaundry);
 router.post("/machines", laundryController.createMachine);
+router.post("/machines/:machineId", laundryController.removeMachine);
 router.get("/machines/:laundryId", laundryController.getMachinesByLaundry);
-router.post("/bookings", laundryController.createBooking);
-router.get(
-  "/bookings/laundry/:laundryId",
-  laundryController.getBookingsByLaundry
-);
-router.get("/bookings/user/:userId", laundryController.getBookingsByUser);
-router.delete("/bookings/:bookingId", laundryController.removeBooking);
 
 //will run restrictTo MW for all routes after this line
 router.use(authController.restrictTo("admin", "superuser"));

@@ -35,7 +35,9 @@ export default function MachineAddForm({ handleMachineAdd }: MachineFormProps) {
             name="number"
             helperText="Machine number in laundry"
             value={machNumber}
-            onChange={(e) => setMachNumber(parseInt(e.target.value))}
+            onChange={(e) =>
+              e.target.value && setMachNumber(parseInt(e.target.value))
+            }
           />
         </Grid>
         <Grid item xs={6}>
@@ -49,7 +51,9 @@ export default function MachineAddForm({ handleMachineAdd }: MachineFormProps) {
             name="size"
             helperText="Size in kilograms"
             value={machSize}
-            onChange={(e) => setMachSize(parseInt(e.target.value))}
+            onChange={(e) =>
+              e.target.value && setMachSize(parseInt(e.target.value))
+            }
           />
         </Grid>
       </Grid>

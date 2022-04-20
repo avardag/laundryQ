@@ -9,6 +9,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useAppSelector, useAppDispatch } from "../app/store";
 import { getAllLaundries } from "../app/features/laundrySlice";
 import { updateUserLaundry } from "../app/features/authSlice";
+import { Divider } from "@mui/material";
 
 export default function MyLaundry() {
   const auth = useAuth();
@@ -28,6 +29,7 @@ export default function MyLaundry() {
       dispatch(updateUserLaundry({ id: auth.user?.id, laundryId }));
     }
   };
+  //height og a select dropdown. Paper inside of select compt
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -57,7 +59,10 @@ export default function MyLaundry() {
           You don't have a laundry registered on your account
         </Typography>
       )}
-      <Typography variant="h6">You can set or update your laundry</Typography>
+      <Divider sx={{ mb: 5, mt: 1 }} />
+      <Typography variant="h6" color="primary">
+        You can set or update your laundry
+      </Typography>
       <FormControl variant="standard" fullWidth>
         <Select
           labelId="demo-simple-select-standard-label"

@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSnackbar } from "notistack";
-import { getAllLaundries, removeLaundry } from "../app/features/laundrySlice";
+import {
+  activateLaundry,
+  getAllLaundries,
+  removeLaundry,
+} from "../app/features/laundrySlice";
 import { useAppDispatch, useAppSelector } from "../app/store";
 import { useAuth } from "../hooks/useAuth";
 import Typography from "@mui/material/Typography";
@@ -38,7 +42,9 @@ export default function Laundries() {
         });
       });
   };
-  const handleLaundryActivate = (id: number) => {};
+  const handleLaundryActivate = (id: number) => {
+    dispatch(activateLaundry(id));
+  };
   return (
     <div>
       <Typography variant="h6" color="primary" gutterBottom>
