@@ -1,6 +1,10 @@
 {
   "name": "laundry",
   "version": "1.0.0",
+  "engines": {
+    "node": "<=16.x.x",
+    "npm": "<=8.x.x"
+  },
   "description": "",
   "main": "index.js",
   "scripts": {
