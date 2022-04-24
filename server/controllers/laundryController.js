@@ -17,7 +17,31 @@ exports.getLaundries = catchAsyncError(async (req, res, next) => {
 exports.createLaundry = catchAsyncError(async (req, res, next) => {
   const { name, address, phone, city, postcode, admin_id } = req.body;
 
+  if (![name, address, phone, city, postcode].every(Boolean))
+    return next(new AppError("Missing input values", 400));
   const laundry = await laundriesRepository.create({
+    name,
+    address,
+    phone,
+    city,
+    postcode,
+    admin_id: admin_id ? admin_id : null,
+  });
+  res.status(200).json({
+    status: "success",
+    data: {
+      laundry,
+    },
+  });
+});
+exports.updateLaundry = catchAsyncError(async (req, res, next) => {
+  const { name, address, phone, city, postcode, admin_id } = req.body;
+
+  const laundryId = req.params.laundryId;
+
+  if (![name, address, phone, city, postcode].every(Boolean))
+    return next(new AppError("Missing input values", 400));
+  const laundry = await laundriesRepository.update(laundryId, {
     name,
     address,
     phone,
@@ -101,7 +125,7 @@ exports.getMachinesByLaundry = catchAsyncError(async (req, res, next) => {
   const { laundryId } = req.params;
 
   const machines = await machinesRepository.findAllByLaundryId(laundryId);
-  console.log(machines);
+
   res.status(200).json({
     status: "success",
     data: {

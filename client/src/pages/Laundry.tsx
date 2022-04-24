@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSnackbar } from "notistack";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -14,32 +13,45 @@ import MachineCard from "../components/MachineCard";
 import { useAuth } from "../hooks/useAuth";
 import { useAppDispatch, useAppSelector } from "../app/store";
 //actions
-import { createLaundry, createMachine } from "../app/features/laundrySlice";
+import {
+  createLaundry,
+  createMachine,
+  getMachines,
+  updateLaundry,
+} from "../app/features/laundrySlice";
 import { Laundry as LaundryType, Machine } from "../types/laundryTypes";
 import MachineAddForm from "../components/MachineAddForm";
 //axios
 import laundryServices from "../app/services/laundryServices";
+import useSnack from "../hooks/useSnack";
 
-type locationStateProps = LaundryType | null;
+type locationStateProps = {
+  fromEditPage: boolean;
+  laundryId: number;
+  laundry: LaundryType;
+} | null;
 
 export default function Laundry() {
   //TODO: Refactor. Split this component to 2 or three
   const location = useLocation();
   const locationState = location.state as locationStateProps;
-  console.log("locationState", locationState);
+  const fromEditPage = locationState?.fromEditPage;
 
   let navigate = useNavigate();
   let auth = useAuth();
   const dispatch = useAppDispatch();
   const [newLaundry, setNewLaundry] = useState<LaundryType | null>(null);
-  console.log("newLaundry", newLaundry);
 
   const [newMachines, setNewMachines] = useState<Machine[]>([]);
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { successSnack, errorSnack, closeSnackbar } = useSnack();
 
   useEffect(() => {
-    locationState && setNewLaundry(locationState);
+    locationState && setNewLaundry(locationState.laundry);
+    locationState &&
+      laundryServices
+        .getMachinesByLaundry(locationState.laundryId)
+        .then((result) => setNewMachines(result.data.data.machines));
     return () => {};
   }, []);
 
@@ -62,22 +74,23 @@ export default function Laundry() {
       postcode,
       admin_id: isAdmin,
     };
-    dispatch(createLaundry(laundryData))
-      .unwrap()
-      .then((originalPromiseResult) => {
-        setNewLaundry(originalPromiseResult.data.laundry);
-        enqueueSnackbar(
-          `Laundry ${originalPromiseResult.data.laundry.name} added`,
-          {
-            variant: "success",
-          }
-        );
-      })
-      .catch((rejectedValueOrSerializedError) => {
-        enqueueSnackbar(rejectedValueOrSerializedError.message, {
-          variant: "error",
-        });
-      });
+    fromEditPage
+      ? dispatch(
+          updateLaundry({ laundryId: newLaundry?.id as number, laundryData })
+        ) //TODO:fix typings
+          .unwrap()
+          .then((result) => {
+            setNewLaundry(result.data.laundry);
+            successSnack(`Laundry ${result.data.laundry.name} updated`);
+          })
+          .catch((rejOrErr) => errorSnack(rejOrErr.message))
+      : dispatch(createLaundry(laundryData))
+          .unwrap()
+          .then((result) => {
+            setNewLaundry(result.data.laundry);
+            successSnack(`Laundry ${result.data.laundry.name} added`);
+          })
+          .catch((rejOrErr) => errorSnack(rejOrErr.message));
   }
   function handleMachineAdd(machNumber: number, machSize: number) {
     newLaundry &&
@@ -89,23 +102,11 @@ export default function Laundry() {
         })
       )
         .unwrap()
-        .then((originalPromiseResult) => {
-          setNewMachines([
-            ...newMachines,
-            originalPromiseResult.data.newMachine,
-          ]);
-          enqueueSnackbar(
-            `Machine ${originalPromiseResult.data.newMachine.number} added`,
-            {
-              variant: "success",
-            }
-          );
+        .then((result) => {
+          setNewMachines([...newMachines, result.data.newMachine]);
+          successSnack(`Machine ${result.data.newMachine.number} added`);
         })
-        .catch((rejectedValueOrSerializedError) => {
-          enqueueSnackbar(rejectedValueOrSerializedError.message, {
-            variant: "error",
-          });
-        });
+        .catch((rejOrErr) => errorSnack(rejOrErr.message));
   }
 
   function handleMachineDelete(id: number) {
@@ -117,15 +118,9 @@ export default function Laundry() {
             (machine) => machine.id !== result.data.data.deletedId
           )
         );
-        enqueueSnackbar(`Machine id:${result.data.data.deletedId} removed`, {
-          variant: "success",
-        });
+        successSnack(`Machine id:${result.data.data.deletedId} removed`);
       })
-      .catch((err) => {
-        enqueueSnackbar(err.message, {
-          variant: "error",
-        });
-      });
+      .catch((rejOrErr) => errorSnack(rejOrErr.message));
   }
   return (
     <Box>
@@ -140,7 +135,7 @@ export default function Laundry() {
             }}
           >
             <Typography component="h1" variant="h3">
-              Add a Laundry
+              {fromEditPage ? "Edit" : "Add"} a Laundry
             </Typography>
             <Box
               component="form"
@@ -156,8 +151,8 @@ export default function Laundry() {
                     id="name"
                     label="Laundry name"
                     name="name"
-                    defaultValue={newLaundry?.name}
-                    disabled={newLaundry ? true : false}
+                    defaultValue={locationState?.laundry.name}
+                    disabled={newLaundry && !fromEditPage ? true : false}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -168,8 +163,8 @@ export default function Laundry() {
                     label="Phone"
                     type="text"
                     id="phone"
-                    defaultValue={newLaundry?.phone}
-                    disabled={newLaundry ? true : false}
+                    defaultValue={locationState?.laundry.phone}
+                    disabled={newLaundry && !fromEditPage ? true : false}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -179,8 +174,8 @@ export default function Laundry() {
                     id="address"
                     label="Laundry Address"
                     name="address"
-                    defaultValue={newLaundry?.address}
-                    disabled={newLaundry ? true : false}
+                    defaultValue={locationState?.laundry.address}
+                    disabled={newLaundry && !fromEditPage ? true : false}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -191,8 +186,8 @@ export default function Laundry() {
                     fullWidth
                     id="city"
                     label="City"
-                    defaultValue={newLaundry?.city}
-                    disabled={newLaundry ? true : false}
+                    defaultValue={locationState?.laundry.city}
+                    disabled={newLaundry && !fromEditPage ? true : false}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -203,14 +198,14 @@ export default function Laundry() {
                     label="Postcode"
                     name="postcode"
                     autoComplete="postal-code"
-                    defaultValue={newLaundry?.address}
-                    disabled={newLaundry ? true : false}
+                    defaultValue={locationState?.laundry.postcode}
+                    disabled={newLaundry && !fromEditPage ? true : false}
                   />
                 </Grid>
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
-                  disabled={newLaundry ? true : false}
+                  disabled={newLaundry && !fromEditPage ? true : false}
                   control={
                     <Checkbox
                       value={auth.user?.id}
@@ -226,9 +221,9 @@ export default function Laundry() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                disabled={newLaundry ? true : false}
+                disabled={newLaundry && !fromEditPage ? true : false}
               >
-                Register Laundry
+                {fromEditPage ? "Edit Laundry" : "Register Laundry"}
               </Button>
             </Box>
           </Box>

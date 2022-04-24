@@ -68,7 +68,7 @@ export default function LaundryEditCard({
           <Button
             component={RouterLink}
             to="/laundry"
-            state={laundry}
+            state={{ fromEditPage: true, laundryId: laundry.id, laundry }}
             size="small"
             color="success"
           >

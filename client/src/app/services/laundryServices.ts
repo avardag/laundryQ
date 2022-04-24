@@ -26,6 +26,16 @@ async function createLaundry(
 ): Promise<AxiosResponse<LaundryAddEditApiRes>> {
   return axiosApi.post<LaundryAddEditApiRes>(`/laundry`, data);
 }
+async function updateLaundry(data: {
+  laundryId: number;
+  laundryData: Omit<Laundry, "id" | "is_active">;
+}): Promise<AxiosResponse<LaundryAddEditApiRes>> {
+  const { laundryId, laundryData } = data;
+  return axiosApi.put<LaundryAddEditApiRes>(
+    `/laundry/${laundryId}`,
+    laundryData
+  );
+}
 async function removeLaundry(
   laundryId: number
 ): Promise<AxiosResponse<DeletedResponse>> {
@@ -52,6 +62,7 @@ export default {
   getAll,
   getMachinesByLaundry,
   createLaundry,
+  updateLaundry,
   removeLaundry,
   createMachine,
   activateLaundry,

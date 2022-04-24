@@ -13,6 +13,7 @@ router.get("/", laundryController.getLaundries);
 router.use(authController.protect);
 
 router.post("/", laundryController.createLaundry);
+router.put("/:laundryId", laundryController.updateLaundry);
 router.post("/machines", laundryController.createMachine);
 router.post("/machines/:machineId", laundryController.removeMachine);
 router.get("/machines/:laundryId", laundryController.getMachinesByLaundry);

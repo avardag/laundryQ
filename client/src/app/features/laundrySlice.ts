@@ -64,6 +64,27 @@ export const createLaundry = createAsyncThunk<
     return rejectWithValue(error.response.data);
   }
 });
+export const updateLaundry = createAsyncThunk<
+  LaundryAddEditApiRes, // Return type of the payload creator i.e. what type will be returned as a result
+  { laundryData: Omit<Laundry, "id" | "is_active">; laundryId: number }, // First argument to the payload creator i.e. what argument takes the function inside:
+  {
+    // Optional fields for defining thunkApi field types
+    rejectValue: ApiErrorResponse; //type possible errors.
+  }
+>(`laundry/updateLaundry`, async (data, { getState, rejectWithValue }) => {
+  try {
+    const res = await laundryServices.updateLaundry(data);
+
+    return res.data;
+  } catch (err: any) {
+    let error: AxiosError<ApiErrorResponse> = err; // cast the error for access
+    if (!error.response) {
+      throw err;
+    }
+    // We got validation errors, let's return those so we can reference in our component and set form errors
+    return rejectWithValue(error.response.data);
+  }
+});
 export const removeLaundry = createAsyncThunk<
   DeletedResponse, // Return type of the payload creator i.e. what type will be returned as a result
   number, // First argument to the payload creator i.e. what argument takes the function inside:
@@ -203,6 +224,26 @@ const laundrySlice = createSlice({
         state.errorMessage = action.payload?.message
           ? action.payload?.message
           : "Laundry can't be added";
+        state.loading = false;
+      })
+      .addCase(updateLaundry.fulfilled, (state, action) => {
+        state.laundries.map((laundry) =>
+          laundry.id === action.payload.data.laundry.id
+            ? action.payload.data.laundry
+            : laundry
+        );
+        state.errorMessage = "";
+        state.loading = false;
+      })
+      .addCase(updateLaundry.pending, (state, action) => {
+        state.loading = true;
+        state.error = false;
+      })
+      .addCase(updateLaundry.rejected, (state, action) => {
+        state.error = true;
+        state.errorMessage = action.payload?.message
+          ? action.payload?.message
+          : "Laundry can't be updated";
         state.loading = false;
       })
       .addCase(removeLaundry.fulfilled, (state, action) => {
