@@ -40,7 +40,7 @@ exports.sendActivationMail = async (to, link) => {
   sgMail.setApiKey(process.env.EMAIL_PASSWORD);
   const msg = {
     to: to, // Change to your recipient
-    from: process.env.EMAIL_FROM, // Change to your verified sender
+    from: "stekloan@gmail.com", // Change to your verified sender
     subject: `Account activation on ${process.env.API_URL}`,
     text: "",
     html: `
