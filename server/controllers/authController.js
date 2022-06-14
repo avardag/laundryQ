@@ -46,6 +46,7 @@ const setCookie = function (res, cookieData, cookieName = "jwt_r_auth") {
 //SIGNUP
 /////////////////////////
 exports.signup = catchAsyncError(async (req, res, next) => {
+  console.log("signup");
   //register user and get tokens
   const userData = await userServices.registerUser(req.body);
   //set cookie
@@ -75,6 +76,7 @@ exports.activate = catchAsyncError(async (req, res, next) => {
 //LOGIN
 /////////////////////////
 exports.login = catchAsyncError(async (req, res, next) => {
+  console.log("sg");
   const { email, password } = req.body;
   //check if email and passwords exist
   if (!email || !password)

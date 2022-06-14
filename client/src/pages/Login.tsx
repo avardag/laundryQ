@@ -14,6 +14,8 @@ import { useAppDispatch, useAppSelector } from "../app/store";
 //actions
 import { login } from "../app/features/authSlice";
 
+import useSnack from "../hooks/useSnack";
+
 function Copyright(props: any) {
   return (
     <Typography
@@ -40,6 +42,8 @@ export default function Login() {
   const authState = useAppSelector((state) => state.auth);
   let from = location.state?.from?.pathname || "/";
 
+  const { successSnack, errorSnack, closeSnackbar } = useSnack();
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -47,9 +51,13 @@ export default function Login() {
     let email = formData.get("email") as string;
     let password = formData.get("password") as string;
 
-    dispatch(login({ email, password })).then((data) => {
-      if (data.payload?.status === "success") navigate(from, { replace: true });
-    });
+    dispatch(login({ email, password }))
+      .unwrap()
+      .then((result) => {
+        successSnack(`Logged in as ${result.user.firstName}`);
+        navigate(from, { replace: true });
+      })
+      .catch((rejOrErr) => errorSnack(rejOrErr.message));
   }
   if (authState.loading) {
     return <h1>Loading.....</h1>;

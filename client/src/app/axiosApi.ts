@@ -4,7 +4,7 @@ import { Store } from "@reduxjs/toolkit";
 import { logoutOnExpire } from "./features/authSlice";
 
 // export const API_URL = "http://localhost:5000/api/v1";
-export const API_URL = "/api";
+export const API_URL = "/api/v1";
 const axiosApi = axios.create({
   withCredentials: true,
   baseURL: API_URL,

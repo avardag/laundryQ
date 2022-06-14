@@ -147,7 +147,7 @@ export default function Signup() {
                 name="passwordConfirm"
                 label=" Confirm Password"
                 type="password"
-                id="password"
+                id="passwordConfirm"
                 autoComplete="new-password"
               />
             </Grid>
