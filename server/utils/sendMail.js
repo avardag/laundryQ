@@ -4,7 +4,10 @@ exports.sendActivationMail = async (to, link) => {
 
   //Gmail example
   const transporter = nodemailer.createTransport({
-    service: "Gmail",
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: false,
+    requireTLS: true,
     auth: {
       user: process.env.EMAIL_USERNAME,
       pass: process.env.EMAIL_PASSWORD,
@@ -24,6 +27,7 @@ exports.sendActivationMail = async (to, link) => {
         <a href="${link}">${link}</a> 
     </div>
     `,
+    headers: { "x-cloudmta-class": "standard" },
   };
   //3)send email
   await transporter.sendMail(mailOptions);
