@@ -34,7 +34,6 @@ app.use("/api/v1/laundry", laundryRoutes);
 app.use("/api/v1/bookings", bookingsRoutes);
 
 if (ENV === "production") {
-  console.log("production");
   app.use(express.static(path.join(__dirname, "../client/dist")));
   app.use((req, res) => {
     res.sendFile(path.join(__dirname, "../client/dist/index.html"));

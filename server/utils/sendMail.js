@@ -16,8 +16,8 @@ exports.sendActivationMail = async (to, link) => {
 
   //2)define email options
   const mailOptions = {
-    // from: `LaundryQ <${process.env.EMAIL_USERNAME}>`,
-    from: process.env.EMAIL_FROM,
+    from: `LaundryQ <${process.env.EMAIL_USERNAME}>`,
+    // from: process.env.EMAIL_FROM,
     to,
     subject: `Account activation on ${process.env.API_URL}`,
     text: "",

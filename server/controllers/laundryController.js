@@ -82,7 +82,6 @@ exports.activation = catchAsyncError(async (req, res, next) => {
   const laundry = await laundriesRepository.update(laundryId, {
     is_active: !laundryToActivate.is_active,
   });
-  console.log("laundry", laundry);
   res.status(200).json({
     status: "success",
     data: {
