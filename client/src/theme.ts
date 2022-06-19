@@ -5,18 +5,27 @@ import { red } from "@mui/material/colors";
 const themeOptions = {
   palette: {
     primary: {
-      main: "#556cd6",
+      light: "#748293",
+      main: "#485665",
+      dark: "#1f2d3b",
+      contrastText: "#fff",
     },
     secondary: {
-      main: "#19857b",
+      light: "#9af1ff",
+      main: "#66becc",
+      dark: "#2f8e9b",
+      contrastText: "#000",
     },
     error: {
       main: red.A400,
     },
   },
   typography: {},
+  overrides: {
+    // MuiButton: {},
+  },
 };
-// const theme = createTheme(themeOptions);
-const theme = createTheme();
+const theme = createTheme(themeOptions);
+// const theme = createTheme();
 
 export default theme;

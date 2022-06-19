@@ -15,6 +15,8 @@ import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import { User } from "../types/types";
+//logo
+import Logo from "../assets/LaundryQ_logo_bl_bg.png";
 
 interface AppBarProps {
   user: User | null;
@@ -38,14 +40,14 @@ export default function MenuAppBar({ user, onLogout }: AppBarProps) {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Link to="/">
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{ mr: 2, flexGrow: 0, display: { xs: "flex", md: "flex" } }}
-            >
-              laundryQ
-            </Typography>
+            <Box
+              component="img"
+              sx={{
+                height: 50,
+              }}
+              alt="Your logo."
+              src={Logo}
+            />
           </Link>
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
