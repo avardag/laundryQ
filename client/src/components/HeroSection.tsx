@@ -7,7 +7,7 @@ import LaundryImage from "../assets/img/laundry_blue.png";
 
 export default function HeroSection() {
   return (
-    <Paper sx={{ p: 4, my: { xs: 2, md: 6 } }}>
+    <Paper sx={{ backgroundColor: "#F0F7F4", p: 4, my: { xs: 2, md: 6 } }}>
       <Box
         sx={{
           display: "flex",

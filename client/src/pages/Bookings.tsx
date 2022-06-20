@@ -5,6 +5,7 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -112,7 +113,7 @@ export default function Bookings() {
         Make a booking
       </Typography>
       <div></div>
-      <div>
+      <Box sx={{ py: 5 }}>
         {getDatesFromToday(18).map((date) => (
           <Accordion
             key={date.toDateString()}
@@ -189,7 +190,7 @@ export default function Bookings() {
           bookingDetails={bookingDetails}
           onSubmit={handleDialogSubmit}
         />
-      </div>
+      </Box>
     </Container>
   );
 }

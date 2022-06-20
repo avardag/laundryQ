@@ -1,9 +1,26 @@
-import CssBaseline from "@mui/material/CssBaseline";
+import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
-import Logo from "../assets/LaundryQ_logo_whi_bg.png";
+import Logo from "../assets/LaundryQ_logo_bl_bg.png";
+
+const footers = [
+  {
+    title: "Company",
+    description: ["Team", "History", "Contact us", "Locations"],
+  },
+  {
+    title: "Contacts",
+    description: [
+      "Laundry Q AB",
+      "Alpha Str 22",
+      "Stockholm",
+      "tel: +46(76)111221",
+      "Terms of use",
+    ],
+  },
+];
 
 function Copyright() {
   return (
@@ -28,26 +45,46 @@ export default function Footer() {
         mt: "auto",
         backgroundColor: (theme) =>
           theme.palette.mode === "light"
-            ? theme.palette.grey[400]
-            : theme.palette.grey[800],
+            ? theme.palette.primary.main
+            : theme.palette.primary.light,
       }}
     >
-      <Container
-        maxWidth="md"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-around",
-        }}
-      >
+      <Container maxWidth="md">
         <Box
-          component="img"
           sx={{
-            height: 50,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-around",
           }}
-          alt="Your logo."
-          src={Logo}
-        />
+        >
+          <Box
+            component="img"
+            sx={{
+              height: 50,
+            }}
+            alt="Your logo."
+            src={Logo}
+          />
+          <Grid container spacing={4} justifyContent="space-evenly">
+            {footers.map((footer) => (
+              <Grid item xs={6} sm={3} key={footer.title}>
+                <Typography variant="h6" color="white" gutterBottom>
+                  {footer.title}
+                </Typography>
+                <ul>
+                  {footer.description.map((item) => (
+                    <li key={item}>
+                      <Link href="#" variant="subtitle1" color="text.secondary">
+                        {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
         <Typography variant="body1">Laundry Q</Typography>
         <Copyright />
       </Container>
