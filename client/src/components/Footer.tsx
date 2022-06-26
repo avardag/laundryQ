@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
+import Stack from "@mui/material/Stack";
 import Logo from "../assets/LaundryQ_logo_bl_bg.png";
 
 const footers = [
@@ -17,16 +18,15 @@ const footers = [
       "Alpha Str 22",
       "Stockholm",
       "tel: +46(76)111221",
-      "Terms of use",
     ],
   },
 ];
 
 function Copyright() {
   return (
-    <Typography variant="body2" color="text.secondary">
+    <Typography variant="body2" color="#fff">
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
+      <Link color="inherit" href="https://mui.com/" underline="none">
         Laundry Q
       </Link>{" "}
       {new Date().getFullYear()}
@@ -55,6 +55,7 @@ export default function Footer() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-around",
+            py: 3,
           }}
         >
           <Box
@@ -71,22 +72,28 @@ export default function Footer() {
                 <Typography variant="h6" color="white" gutterBottom>
                   {footer.title}
                 </Typography>
-                <ul>
-                  {footer.description.map((item) => (
-                    <li key={item}>
-                      <Link href="#" variant="subtitle1" color="text.secondary">
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                {footer.description.map((item) => (
+                  <Link
+                    href="#"
+                    variant="subtitle1"
+                    color="text.secondary"
+                    underline="none"
+                  >
+                    <p>{item}</p>
+                  </Link>
+                ))}
               </Grid>
             ))}
           </Grid>
         </Box>
-
-        <Typography variant="body1">Laundry Q</Typography>
-        <Copyright />
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Copyright />
+        </Stack>
       </Container>
     </Box>
   );
