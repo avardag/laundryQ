@@ -17,24 +17,6 @@ import { useAppDispatch, useAppSelector } from "../app/store";
 import { login, signup } from "../app/features/authSlice";
 import { SignupRequest } from "../types/types";
 
-function Copyright(props: any) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mndkjnjkncjkdncui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
 export default function Signup() {
   let navigate = useNavigate();
   let auth = useAuth();
@@ -208,7 +190,6 @@ export default function Signup() {
           </Grid>
         </Box>
       </Box>
-      <Copyright sx={{ mt: 5 }} />
     </Container>
   );
 }

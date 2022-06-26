@@ -16,24 +16,6 @@ import { login } from "../app/features/authSlice";
 
 import useSnack from "../hooks/useSnack";
 
-function Copyright(props: any) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mukkdcldklackecmi.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
 export default function Login() {
   let navigate = useNavigate();
   let location = useLocation() as any; //TODO: fix types
@@ -124,7 +106,6 @@ export default function Login() {
           </Grid>
         </Box>
       </Box>
-      <Copyright sx={{ mt: 8, mb: 4 }} />
     </Container>
   );
 }

@@ -31,13 +31,16 @@ export default function HeroSection() {
             textAlign="center"
             sx={{ mt: 5, fontSize: { xs: "2.4rem", md: "3rem" } }}
           >
-            Online Laundry Booking System
+            Europe's Best Laundry Booking
           </Typography>
           <Typography fontSize={18} textAlign="center" mt={7}>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
-            blanditiis tenetur unde suscipit, quam beatae rerum inventore
-            consectetur, neque doloribus, cupiditate numquam dignissimos laborum
-            fugiat deleniti? Eum quasi quidem quibusdam.
+            Online Laundry Booking System made easy and secure. Register your
+            laundry and receive bookings in an instant. Get ready to make lives
+            of your laundry users easy with the simplest system in internet.
+            Laundry room booking should be simple and clear. Using our system
+            you don't need any paper calendars with pencils or even mechanical
+            With the booking systems that we offers you today, you can easily
+            book time without a pen or key that must be kept in mind.
           </Typography>
           <Box
             sx={{
