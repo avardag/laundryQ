@@ -6,14 +6,14 @@
     "npm": "<=8.x.x"
   },
   "description": "",
-  "main": "index.js",
+  "main": "server/index.js",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "client": "npm run dev --prefix client",
     "server": "NODE_ENV=development nodemon server",
     "server:prod": "NODE_ENV=production nodemon server",
-    "start": "node server",
     "postbuild": "cd client && npm install --production=false && npm run build",
+    "start": "node server",
     "knex": "knex init",
     "db:migrate:make": "knex migrate:make --knexfile server/db/knexfile.js",
     "db:migrate:latest": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:latest --knexfile server/db/knexfile.js",
