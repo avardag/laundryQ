@@ -13,7 +13,7 @@
     "server": "NODE_ENV=development nodemon server",
     "server:prod": "NODE_ENV=production nodemon server",
     "start": "node server",
-    "heroku-postbuild": "cd client && npm install --production=false && npm run build",
+    "postbuild": "cd client && npm install --production=false && npm run build",
     "knex": "knex init",
     "db:migrate:make": "knex migrate:make --knexfile server/db/knexfile.js",
     "db:migrate:latest": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:latest --knexfile server/db/knexfile.js",
