@@ -14,7 +14,7 @@ const footers = [
   {
     title: "Contacts",
     description: [
-      "Laundry Q llc",
+      "Laundry Q llc.",
       "Alpha Str 22",
       "Stockholm",
       "tel: +46(76)111221",
