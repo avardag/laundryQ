@@ -13,6 +13,6 @@ node_modules/
 #intelliJ
 .idea/
 
-client/dist/
+##client/dist/
 
 deploySettings.txt
